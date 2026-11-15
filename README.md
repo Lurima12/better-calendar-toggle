@@ -38,27 +38,53 @@ Open them with `gnome-extensions prefs better-calendar-toggle@lurim412` or from 
 
 ## Compatibility
 
-Declared for GNOME Shell 45 to 50 (ES module extensions). The extension relies on
-the stock date menu's internals and leaves it untouched if the layout is not recognised.
+Declared for GNOME Shell 45 to 50 (ES module extensions) and developed on GNOME
+Shell 50.1. The extension relies on the stock date menu's internals and leaves it
+untouched if the layout is not recognised.
 
-## Install (development)
+## Build and install (development)
 
+The extension is modular: `extension.js` imports the modules in `src/`, so a
+plain `gnome-extensions pack` leaves them out. The Makefile wraps the correct
+commands:
+
+    make check      # validate the GSettings schema (strict)
+    make compile    # build schemas/gschemas.compiled
+    make pack       # build dist/better-calendar-toggle@lurim412.shell-extension.zip
+    make install    # install the archive and compile its schema
+    make enable     # enable the extension
+    make clean      # remove dist/ and the compiled schema
+
+On Wayland, log out and back in after `make install` so the shell loads the new
+code. On X11, Alt+F2 and `r` is enough.
+
+The manual equivalent:
+
+    glib-compile-schemas schemas
+    gnome-extensions pack --force \
+        --extra-source=src \
+        --extra-source=README.md \
+        --extra-source=CHANGELOG.md \
+        --extra-source=COPYING \
+        --out-dir=dist .
     mkdir -p ~/.local/share/gnome-shell/extensions
-    cp -r better-calendar-toggle@lurim412 ~/.local/share/gnome-shell/extensions/
+    unzip -q dist/better-calendar-toggle@lurim412.shell-extension.zip \
+        -d ~/.local/share/gnome-shell/extensions/better-calendar-toggle@lurim412
     glib-compile-schemas ~/.local/share/gnome-shell/extensions/better-calendar-toggle@lurim412/schemas
-
-The second command is only needed if `schemas/gschemas.compiled` is missing.
     gnome-extensions enable better-calendar-toggle@lurim412
 
-On Wayland, log out and back in for a new extension to be picked up.
+`schemas/gschemas.compiled` is generated and ignored by Git; it is not part of
+the source tree.
 
 ## Packaging
 
-    gnome-extensions pack better-calendar-toggle@lurim412
+`make pack` builds `dist/better-calendar-toggle@lurim412.shell-extension.zip`.
+The archive includes `src/`, `README.md`, `CHANGELOG.md` and `COPYING` in
+addition to the standard files, and the target fails if `src/` is missing.
 
 ## License
 
-GPL-2.0-or-later. Add a copy of the license text as `COPYING` before publishing.
+GPL-2.0-or-later. See `COPYING`.
 
 ## Troubleshooting
 

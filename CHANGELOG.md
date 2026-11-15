@@ -2,6 +2,22 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.30.0
+
+- Packaging: the archive now includes `src/`, `README.md`, `CHANGELOG.md` and
+  `COPYING`. A plain `gnome-extensions pack` left the modules out, so an
+  installed copy could not load; `make pack` builds the complete archive and
+  fails if `src/` is absent
+- Build: `make check`, `make compile`, `make pack`, `make install`, `make enable`
+  and `make clean` wrap schema validation, compilation, packaging and
+  installation
+- Metadata: added the integer `version` (30) used by extensions.gnome.org and
+  the review tools, and updated the version name to 0.30.0
+- Repository: the extension now lives in its own Git repository, with a
+  `.gitignore` for generated files (compiled schemas, packages) and a `COPYING`
+  licence file
+- No user-facing behaviour changed
+
 ## 0.29.0
 
 - Alarms: the card gets a little more room on its left and right sides (wider padding and a
