@@ -280,6 +280,9 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             ['custom', 'stock'],
             [_('Drawn by this extension (fills the tab)'), _('The list of GNOME Shell')]));
 
+        group.add(switchRow(settings, 'notifications-scrollbar', _('Show scroll bar'),
+            _('When off, the list still scrolls but no scroll bar is drawn.')));
+
         const dndRow = switchRow(settings, 'show-dnd-switch', _('Do Not Disturb button'),
             _('A compact button on the Notifications page.'));
         const positionRow = comboRow(settings, 'dnd-position', _('Button position'),

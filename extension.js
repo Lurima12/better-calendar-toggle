@@ -452,7 +452,7 @@ class DateMenuOverhaul {
             // Records the original values so they are restored on teardown.
             // Overlay scroll bars take no space beside the notifications.
             this._setProps(this._listScroll, {
-                vscrollbar_policy: this._scrollPolicy(),
+                vscrollbar_policy: this._notificationsScrollPolicy(),
                 hscrollbar_policy: St.PolicyType.NEVER,
                 overlay_scrollbars: true,
             });
@@ -616,9 +616,9 @@ class DateMenuOverhaul {
         content.add_child(view.actor);
         content.add_child(lyrics.actor);
 
-        page.add_child(switcher);
         page.add_child(this._mediaDotsBox);
         page.add_child(content);
+        page.add_child(switcher);
 
         // Selecting a view remembers the choice; the lyrics are only looked up
         // while their view is shown.
@@ -641,23 +641,15 @@ class DateMenuOverhaul {
     }
 
     _makeMediaSwitcher(label, icon, lyricsView) {
-        const content = new St.BoxLayout({style_class: 'bct-media-switcher-content'});
-        content.add_child(new St.Icon({
-            icon_name: icon,
-            style_class: 'popup-menu-icon',
-            y_align: Clutter.ActorAlign.CENTER,
-        }));
-        content.add_child(new St.Label({
-            text: label,
-            y_align: Clutter.ActorAlign.CENTER,
-        }));
-
         const button = new St.Button({
-            style_class: 'bct-media-switcher-button',
+            style_class: 'bct-media-switcher-button button',
             toggle_mode: true,
             can_focus: true,
             accessible_name: label,
-            child: content,
+            child: new St.Icon({
+                icon_name: icon,
+                style_class: 'popup-menu-icon',
+            }),
         });
         button.connect('clicked', () => {
             // Set both states explicitly: clicking the active button would
@@ -1095,12 +1087,18 @@ class DateMenuOverhaul {
             : St.PolicyType.EXTERNAL;
     }
 
+    _notificationsScrollPolicy() {
+        return this._settings.get_boolean('notifications-scrollbar')
+            ? St.PolicyType.AUTOMATIC
+            : St.PolicyType.EXTERNAL;
+    }
+
     _applyScrollbars() {
         const policy = this._scrollPolicy();
         for (const scroll of this._scrolls)
             scroll.vscrollbar_policy = policy;
         if (this._listScroll)
-            this._listScroll.vscrollbar_policy = policy;
+            this._listScroll.vscrollbar_policy = this._notificationsScrollPolicy();
     }
 
     // ------------------------------------------------------------- signals
@@ -1120,6 +1118,8 @@ class DateMenuOverhaul {
         }
         this._settingsSignals.push(
             this._settings.connect('changed::show-scrollbar', () => this._applyScrollbars()));
+        this._settingsSignals.push(
+            this._settings.connect('changed::notifications-scrollbar', () => this._applyScrollbars()));
     }
 
     _connectUiSignals() {

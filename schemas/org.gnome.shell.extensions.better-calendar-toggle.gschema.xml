@@ -126,6 +126,12 @@
       <description>Adds a compact Do Not Disturb button to the Notifications page.</description>
     </key>
 
+    <key name="notifications-scrollbar" type="b">
+      <default>true</default>
+      <summary>Show scroll bar in Notifications</summary>
+      <description>When off, the Notifications list still scrolls but no scroll bar is drawn.</description>
+    </key>
+
     <key name="dnd-position" type="s">
       <choices>
         <choice value="top-left"/>

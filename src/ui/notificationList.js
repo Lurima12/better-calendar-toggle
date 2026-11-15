@@ -75,6 +75,9 @@ export class NotificationList {
         this._settingsIds.push(this._settings.connect('changed::show-scrollbar', () => {
             this._scroll.vscrollbar_policy = this._scrollPolicy();
         }));
+        this._settingsIds.push(this._settings.connect('changed::notifications-scrollbar', () => {
+            this._scroll.vscrollbar_policy = this._scrollPolicy();
+        }));
 
         // Notifications that are already there are not animated.
         for (const notification of this._notifications())
@@ -227,7 +230,7 @@ export class NotificationList {
     }
 
     _scrollPolicy() {
-        return this._settings.get_boolean('show-scrollbar')
+        return this._settings.get_boolean('notifications-scrollbar')
             ? St.PolicyType.AUTOMATIC
             : St.PolicyType.EXTERNAL;
     }
@@ -532,11 +535,19 @@ export class NotificationList {
         const actions = Array.isArray(notification.actions) ? notification.actions : [];
         const usable = actions.filter(action => action && action.label &&
             typeof action.callback === 'function');
-        // The button that shows more or less of the notification
         const hasMore = bodyText !== '' || usable.length > 0;
 
-        const card = new St.BoxLayout({
+        const card = new St.Button({
             style_class: 'bct-notification',
+            vertical: true,
+            x_expand: true,
+            can_focus: true,
+            accessible_name: notification.title ?? notification.source?.title ?? '',
+        });
+
+        // The inner box holds all the card content
+        const inner = new St.BoxLayout({
+            style_class: 'bct-notification-inner',
             vertical: true,
             x_expand: true,
         });
@@ -570,8 +581,7 @@ export class NotificationList {
         header.add_child(this._makeIconButton('window-close-symbolic', t.close,
             button => this._dismissCard(card, notification, button)));
 
-        // Content: icon, title and body; clicking it opens the notification.
-        // Collapsed, the body is one shortened line; expanded, all of it.
+        // Content: icon, title and body
         const icon = new St.Icon({
             style_class: 'bct-notification-icon',
             y_align: Clutter.ActorAlign.START,
@@ -615,19 +625,8 @@ export class NotificationList {
         contentBox.add_child(icon);
         contentBox.add_child(texts);
 
-        const content = new St.Button({
-            style_class: 'bct-notification-content',
-            can_focus: true,
-            x_expand: true,
-            child: contentBox,
-        });
-        content.connect('clicked', () => {
-            notification.activate();
-            this._onActivate?.();
-        });
-
-        card.add_child(header);
-        card.add_child(content);
+        inner.add_child(header);
+        inner.add_child(contentBox);
 
         // Action buttons, shown when the notification is expanded
         if (expanded && usable.length > 0) {
@@ -645,21 +644,67 @@ export class NotificationList {
                 });
                 row.add_child(button);
             }
-            card.add_child(row);
+            inner.add_child(row);
         }
 
-        // A new notification slides in; one that was just expanded or
-        // collapsed fades its text in.
-        if (!this._seen.has(notification)) {
-            this._seen.add(notification);
-            fadeIn(card, {y: -10});
-        }
-        if (this._focusNotification === notification) {
-            this._focusNotification = null;
-            fadeIn(texts, {duration: 120});
-        }
+        card.child = inner;
+
+        // Swallow clicks on inner buttons so they don't also trigger the card
+        this._setupSwallowClick(card, [
+            ...(hasMore ? [header.get_last_child()] : []), // expand/collapse button
+            header.get_children().find(child => child.style_class?.includes('bct-notification-close')), // close button
+            ...(expanded && usable.length > 0 ? inner.get_last_child().get_children() : []), // action buttons
+        ]);
+
+        // Store notification reference on the card for later retrieval
+        card._notification = notification;
 
         return card;
+    }
+
+    _setupSwallowClick(card, controls) {
+        let pressX = 0;
+        let pressY = 0;
+        let wasOnControl = false;
+
+        card.connect('event', (actor, event) => {
+            switch (event.type()) {
+            case Clutter.EventType.BUTTON_PRESS:
+                if (event.get_button() !== Clutter.BUTTON_PRIMARY)
+                    break;
+                pressX = event.get_coords().x;
+                pressY = event.get_coords().y;
+                wasOnControl = controls.some(control => control?.contains(event.get_source()));
+                break;
+            case Clutter.EventType.BUTTON_RELEASE: {
+                const dx = event.get_coords().x - pressX;
+                const dy = event.get_coords().y - pressY;
+                const distance = Math.hypot(dx, dy);
+                const CLICK_TOLERANCE = 5;
+                if (wasOnControl || distance > CLICK_TOLERANCE)
+                    this._cardSwallow = true;
+                else
+                    this._cardSwallow = false;
+                break;
+            }
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
+
+        card.connect('clicked', () => {
+            if (this._cardSwallow) {
+                this._cardSwallow = false;
+                return;
+            }
+            const notification = card._notification;
+            if (notification)
+                notification.activate();
+            this._onActivate?.();
+        });
+    }
+
+    _getNotificationForCard(card) {
+        return card._notification;
     }
 
     _ago(datetime) {

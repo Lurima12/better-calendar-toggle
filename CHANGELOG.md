@@ -2,7 +2,17 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
-## 0.36.0
+## 0.38.0
+
+- Notifications: the entire notification card is now a button; clicking anywhere
+  on it opens the notification, while the close, expand and action buttons
+  are swallowed so they don't also trigger the card
+- Notifications: added a `notifications-scrollbar` preference (on by default)
+  to show or hide the scroll bar in the Notifications tab, for both the
+  built-in list and the stock one
+- No other page changed
+
+## 0.37.0
 
 - GNOME Clocks: the Alarm, World clocks, Stopwatch and Timer cards now open the
   matching Clocks tab. The panel is written to Clocks' `panel-id` before

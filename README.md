@@ -6,7 +6,7 @@ A GNOME Shell extension that overhauls the date menu into separate pages.
 
 - **Calendar & Events**: events on the left, calendar on the right
 - **Notifications**: the notification list, drawn by the extension so it fills the tab (GNOME's own list can be chosen instead)
-- **Media**: the cover on the left and the title, album, seek bar and controls on the right; Media player and Lyrics buttons above the player dots switch between the player and synced lyrics (lyrics hidden by default)
+- **Media**: the cover on the left and the title, album, seek bar and controls on the right; Media player and Lyrics buttons below the player switch between the player and synced lyrics (lyrics hidden by default)
 - **Weather & Clocks**: detailed weather for the city chosen in GNOME Weather (left, click to open it); on the right the alarms card (one alarm at a time, with dots; shares its alarms with GNOME Clocks) always at the top, and the world clock card (cities saved in GNOME Clocks) always at the bottom; the cards keep their places and look the same when empty
 - **Misc**: Pomodoro, Stopwatch and Timer; the Stopwatch and Timer cards open GNOME Clocks, and a running or paused Timer is mirrored there as a stopped timer
 
@@ -24,7 +24,7 @@ Open them with `gnome-extensions prefs better-calendar-toggle@lurim412` or from 
 - **Calendar & Events**: day, month, date and year above or below the calendar; show or hide scroll bars
 - **Do Not Disturb button**: optional, in any corner of the notification list
 - **Scrolling**: touchpad distance per page for the media player and the alarms
-- **Lyrics**: the view shown by default (Media player or Lyrics; also the two buttons above the player dots), provider (automatic, LRCLIB, NetEase, BetterLyrics, local .lrc files), 3 to 9 lines, fonts of the highlighted and other lines
+- **Lyrics**: the view shown by default (Media player or Lyrics; also the two buttons below the player), provider (automatic, LRCLIB, NetEase, BetterLyrics, local .lrc files), 3 to 9 lines, fonts of the highlighted and other lines
 - **Media player**: cover size and shape, playback button size, seek bar, album line, title scrolling
 - **Pomodoro, stopwatch and timer**: durations, notifications and sound for the Misc page; the timer is mirrored into GNOME Clocks while it is active
 - **Panel clock**: custom date and time format for the top bar (GLib format codes)

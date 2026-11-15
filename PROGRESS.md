@@ -14,8 +14,8 @@
 - [x] 0.34.0 — notification spacing, stable weather/clocks cards
 - [x] 0.35.0 — open Clocks from Misc, mirror the Timer duration
 - [x] 0.36.0 — open the matching Clocks tab; alarm header; gear icon
-- [ ] 0.37.0 — media view buttons below the player, icon-only
-- [ ] 0.38.0 — whole notification card clickable; notifications scroll bar preference
+- [x] 0.37.0 — media view buttons below the player, icon-only
+- [x] 0.38.0 — whole notification card clickable; notifications scroll bar preference
 - [ ] Original roadmap — card-interaction refactor (nested buttons → click actions)
 
 ## Architecture & Conventions
@@ -33,4 +33,4 @@
 - Card-wide buttons coexist with inner buttons through `_swallowClick`; the planned refactor replaces that pattern.
 
 ## Exact Next Step
-Implement 0.37.0: move the Media player / Lyrics switcher below the player card and make both buttons icon-only (keep `accessible_name`), then verify the media page order is dots → content → switcher.
+Implement 0.38.0: make the whole notification card a button (with inner close/expand/action buttons swallowed), and add a `notifications-scrollbar` preference wired to the custom and stock notification lists.
