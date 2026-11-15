@@ -22,15 +22,15 @@ const POSITION_SYNC_TICKS = 8;
 const MARQUEE_PAUSE_MS = 1500;
 const MARQUEE_MS_PER_PX = 30;
 
-// Sizing, in text-size units (em). The lyrics column and the spacing around
-// the player take the reserved width of the container (given by the page); the
-// tab bar, paddings and the rows around the cover take RESERVED_HEIGHT_EM of
-// its height. The cover shrinks so the player always fits.
+// Sizing, in text-size units (em). The cover sits on the left of the player
+// card and the details column (title, artist, seek bar, controls) fills the
+// right. The tab bar and paddings take RESERVED_HEIGHT_EM of the container.
 const DEFAULT_RESERVED_WIDTH_EM = 4;
 const RESERVED_HEIGHT_EM = 14;
-const MIN_CARD_EM = 11;
 const MIN_COVER_EM = 4;
-const CARD_PADDING_EM = 1.5;
+const MIN_INFO_EM = 10;
+const CARD_GAP_EM = 1;
+const DETAIL_EM = 18;
 
 const SHAPES = ['rounded', 'square', 'circle'];
 const BUTTON_SIZES = ['small', 'medium', 'large'];
@@ -119,7 +119,7 @@ class MarqueeLabel {
         this._label.y = Math.max(0, Math.round((height - labelHeight) / 2));
 
         if (labelWidth <= width) {
-            this._label.x = Math.round((width - labelWidth) / 2);
+            this._label.x = 0;
             return;
         }
 
@@ -157,10 +157,11 @@ class MarqueeLabel {
     }
 }
 
-// Compact media card, centered: dots (one per player), cover art, scrolling
-// title, album (or artist), seek bar and playback controls. Click the cover to open the
-// app that plays it; swipe, scroll the mouse wheel or click a dot to change
-// player (it stops at the first and last player instead of looping). Cover size, shape, button size and the
+// Compact media card: the cover is on the left, and the scrolling title, album
+// (or artist), seek bar and playback controls are on the right. Click the cover
+// to open the app that plays it; swipe or scroll the mouse wheel to change
+// player (it stops at the first and last player instead of looping). The player
+// dots live in the page above the card. Cover size, shape, button size and the
 // optional parts come from settings, and the player shrinks to fit the
 // container.
 //
@@ -181,8 +182,6 @@ export class MediaView extends Signals.EventEmitter {
         this._syncingSlider = false;
         this._progressId = 0;
         this._progressTicks = 0;
-        this._dots = [];
-        this._dotsKey = '';
         this._container = null;
         this._reservedWidthEm = DEFAULT_RESERVED_WIDTH_EM;
         this._trackKey = null;
@@ -214,12 +213,15 @@ export class MediaView extends Signals.EventEmitter {
 
         this._card = new St.BoxLayout({
             style_class: 'bct-media-card',
-            vertical: true,
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
         });
 
-        this._dotsBox = new St.BoxLayout({
-            style_class: 'bct-media-dots',
-            x_align: Clutter.ActorAlign.CENTER,
+        this._info = new St.BoxLayout({
+            style_class: 'bct-media-info',
+            vertical: true,
+            x_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
         });
 
         this._frame = new St.Bin({
@@ -250,7 +252,7 @@ export class MediaView extends Signals.EventEmitter {
         this._title = new MarqueeLabel('bct-media-title');
         this._subtitle = new St.Label({
             style_class: 'bct-media-subtitle',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
         });
         this._subtitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 
@@ -300,22 +302,15 @@ export class MediaView extends Signals.EventEmitter {
         controls.add_child(this._playPauseButton);
         controls.add_child(this._nextButton);
 
-        this._card.add_child(this._dotsBox);
-        this._card.add_child(this._frame);
-        this._card.add_child(this._title.actor);
-        this._card.add_child(this._subtitle);
-        this._card.add_child(this._seekBox);
-
-        // Playback row: the playback buttons stay centered, and the lyrics
-        // button sits at the right end (an invisible twin on the left keeps
-        // the playback buttons centered).
+        // Cover on the left; title, artist, seek bar and controls on the right.
         controls.x_expand = true;
-        const controlsRow = new St.BoxLayout({style_class: 'bct-media-controls-row'});
-        controlsRow.add_child(this._makeLyricsButton(text, true));
-        controlsRow.add_child(controls);
-        this._lyricsButton = this._makeLyricsButton(text, false);
-        controlsRow.add_child(this._lyricsButton);
-        this._card.add_child(controlsRow);
+        this._info.add_child(this._title.actor);
+        this._info.add_child(this._subtitle);
+        this._info.add_child(this._seekBox);
+        this._info.add_child(controls);
+
+        this._card.add_child(this._frame);
+        this._card.add_child(this._info);
 
         this._placeholder = new St.Label({
             text: text.noMedia,
@@ -331,11 +326,8 @@ export class MediaView extends Signals.EventEmitter {
             this._settingsIds.push(
                 this._settings.connect(`changed::${key}`, () => this._applyOptions()));
         }
-        this._settingsIds.push(
-            this._settings.connect('changed::lyrics-visible', () => this._syncLyricsButton()));
         this._changedId = this._client.connect('changed', () => this._update());
 
-        this._syncLyricsButton();
         this._applyOptions();
     }
 
@@ -360,6 +352,12 @@ export class MediaView extends Signals.EventEmitter {
     // The player that is currently shown, or null.
     get currentPlayer() {
         return this._player();
+    }
+
+    // Shows the player with this bus name (used by the page's player dots).
+    select(busName) {
+        if (busName && busName !== this._currentBus)
+            this._select(busName);
     }
 
     // Size of the menu container in CSS px; the player shrinks to fit it.
@@ -403,20 +401,23 @@ export class MediaView extends Signals.EventEmitter {
         const availableHeight = this._container.height * scale / probeWidth - RESERVED_HEIGHT_EM;
 
         const wanted = this._settings.get_int('media-cover-size');
-        const cardEm = Math.max(MIN_CARD_EM,
-            Math.min(wanted + CARD_PADDING_EM, availableWidth));
+        // The cover keeps its configured size, bounded by the container; the
+        // details take the rest of the card beside it.
         const coverEm = Math.max(MIN_COVER_EM,
-            Math.min(wanted, cardEm - CARD_PADDING_EM, availableHeight));
+            Math.min(wanted, availableWidth - MIN_INFO_EM, availableHeight));
+        const cardEm = Math.max(coverEm + MIN_INFO_EM,
+            Math.min(coverEm + DETAIL_EM, availableWidth));
 
         const card = Math.round(cardEm * 10) / 10;
         const cover = Math.round(coverEm * 10) / 10;
+        const info = Math.round((cardEm - coverEm - CARD_GAP_EM) * 10) / 10;
         const key = `${card}|${cover}`;
         if (key === this._sizeKey)
             return;
         this._sizeKey = key;
 
         this._card.set_style(`width: ${card}em;`);
-        this._title.widthEm = card;
+        this._title.widthEm = info;
         this._coverEm = cover;
         this._renderCover(this._player());
     }
@@ -440,40 +441,6 @@ export class MediaView extends Signals.EventEmitter {
     }
 
     // ------------------------------------------------------------- helpers
-
-    // Shows or hides the lyrics next to the player (remembered). The twin used
-    // for centering is invisible and does nothing.
-    _makeLyricsButton(text, twin) {
-        const button = new St.Button({
-            style_class: 'bct-media-button bct-media-lyrics-button button',
-            toggle_mode: true,
-            can_focus: !twin,
-            reactive: !twin,
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-            accessible_name: twin ? '' : text.lyrics,
-            child: new St.Icon({
-                icon_name: 'format-justify-left-symbolic',
-                style_class: 'popup-menu-icon bct-media-button-icon',
-            }),
-        });
-
-        if (twin) {
-            button.opacity = 0;
-            return button;
-        }
-
-        button.connect('clicked', () => {
-            this._settings.set_boolean('lyrics-visible',
-                !this._settings.get_boolean('lyrics-visible'));
-            this._syncLyricsButton();
-        });
-        return button;
-    }
-
-    _syncLyricsButton() {
-        this._lyricsButton.checked = this._settings.get_boolean('lyrics-visible');
-    }
 
     _makeButton(styleClass, iconName, accessibleName, onClicked) {
         // Centered, so a row never stretches the button into an oval.
@@ -598,38 +565,12 @@ export class MediaView extends Signals.EventEmitter {
 
     // --------------------------------------------------------------- state
 
-    _syncDots(players) {
-        const key = players.map(player => player.busName).join('|');
-        if (key !== this._dotsKey) {
-            this._dotsKey = key;
-            this._dotsBox.destroy_all_children();
-            this._dots = players.map(player => {
-                const dot = new St.Button({
-                    style_class: 'bct-media-dot',
-                    can_focus: true,
-                    accessible_name: player.identity || player.title,
-                });
-                dot.connect('clicked', () => this._select(player.busName));
-                this._dotsBox.add_child(dot);
-                return {dot, busName: player.busName};
-            });
-        }
-
-        for (const {dot, busName} of this._dots) {
-            if (busName === this._currentBus)
-                dot.add_style_class_name('bct-media-dot-active');
-            else
-                dot.remove_style_class_name('bct-media-dot-active');
-        }
-    }
-
     _update() {
         const players = this._client.players;
         const empty = players.length === 0;
 
         this._placeholder.visible = empty;
         this._card.visible = !empty;
-        this._dotsBox.visible = players.length > 1;
         if (empty) {
             this._notifyPlayer(null);
             this._syncProgressTimer();
@@ -642,7 +583,6 @@ export class MediaView extends Signals.EventEmitter {
             player = players.find(candidate => candidate.isPlaying()) ?? players[0];
             this._currentBus = player.busName;
         }
-        this._syncDots(players);
         this._notifyPlayer(player);
 
         this._renderCover(player);

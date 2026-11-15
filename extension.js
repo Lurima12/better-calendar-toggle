@@ -35,9 +35,8 @@ import {WorldClocks} from './src/ui/worldClocks.js';
 const COMPACT_MAX_WIDTH = 1400;
 const COMPACT_MAX_HEIGHT = 800;
 
-// Width (em) the lyrics column and spacing need beside the media player.
-const LYRICS_RESERVED_EM = 27;
-const NO_LYRICS_RESERVED_EM = 4;
+// Width (em) the media player needs beside its padding.
+const MEDIA_RESERVED_EM = 4;
 
 // Smallest fixed container size (CSS px) that still lays out properly.
 const MIN_FIXED_WIDTH = 360;
@@ -87,7 +86,13 @@ class DateMenuOverhaul {
         this._scrolls = [];
         this._mediaViews = [];
         this._lyricsViews = [];
-        this._mediaReservedEm = NO_LYRICS_RESERVED_EM;
+        this._mediaView = null;
+        this._lyricsView = null;
+        this._mediaDotsBox = null;
+        this._mediaDots = [];
+        this._mediaDotsKey = '';
+        this._mediaButton = null;
+        this._lyricsButton = null;
         this._miscView = null;
         this._weatherDetails = null;
         this._worldClocks = null;
@@ -545,14 +550,36 @@ class DateMenuOverhaul {
             : 'preferences-system-notifications-symbolic';
     }
 
-    // Media page: the player, and optionally the lyrics beside it. The Lyrics
-    // button is in the player's playback row. The lyrics are hidden by default
-    // and nothing is looked up while they are hidden.
+// Media page: the player and the lyrics are two views, switched with the
+    // buttons above the player dots. The player card has the cover on the left
+    // and the title, artist, seek bar and controls on the right. The lyrics
+    // view is hidden by default (the setting remembers the choice) and nothing
+    // is looked up while it is hidden.
     _buildMediaPage() {
         const page = new St.BoxLayout({
             style_class: 'bct-media-page',
+            vertical: true,
             x_expand: true,
             y_expand: true,
+        });
+
+        // Media player / Lyrics switcher, above the player dots.
+        const switcher = new St.BoxLayout({
+            style_class: 'bct-media-switcher',
+            x_align: Clutter.ActorAlign.CENTER,
+        });
+        this._mediaButton = this._makeMediaSwitcher(this._('Media player'),
+            'audio-x-generic-symbolic', false);
+        this._lyricsButton = this._makeMediaSwitcher(this._('Lyrics'),
+            'format-justify-left-symbolic', true);
+        switcher.add_child(this._mediaButton);
+        switcher.add_child(this._lyricsButton);
+
+        // One dot per player. They live here, not in the player card, so the
+        // switcher sits above them and they stay in place in both views.
+        this._mediaDotsBox = new St.BoxLayout({
+            style_class: 'bct-media-dots',
+            x_align: Clutter.ActorAlign.CENTER,
         });
 
         const view = new MediaView(this._mpris, {
@@ -561,37 +588,117 @@ class DateMenuOverhaul {
             playPause: this._('Play or pause'),
             nextTrack: this._('Next track'),
             seek: this._('Seek'),
-            lyrics: this._('Show or hide lyrics'),
         }, this._settings, () => this._dateMenu?.menu.close());
         this._mediaViews.push(view);
-        page.add_child(view.actor);
+        this._mediaView = view;
 
         const lyrics = new LyricsView(this._mpris, this._lyrics, this._settings, {
-            searching: this._('Searching for lyrics…'),
+            searching: this._('Searching for lyrics...'),
             none: this._('No synced lyrics found'),
             instrumental: this._('Instrumental'),
             romanization: this._('Show romanization'),
             translation: this._('Show translation'),
         });
         this._lyricsViews.push(lyrics);
-        view.connect('player-changed', (_view, player) => lyrics.setPlayer(player));
-        lyrics.setPlayer(view.currentPlayer);
-        page.add_child(lyrics.actor);
+        this._lyricsView = lyrics;
 
-        // Shows or hides the lyrics column; the player is centered without it.
-        const applyLyrics = initial => {
-            const show = this._settings.get_boolean('lyrics-visible');
-            lyrics.actor.visible = show;
-            lyrics.setEnabled(show);
-            view.actor.x_expand = !show;
-            this._mediaReservedEm = show ? LYRICS_RESERVED_EM : NO_LYRICS_RESERVED_EM;
+        view.connect('player-changed', (_view, player) => {
+            lyrics.setPlayer(player);
+            this._syncMediaDots();
+        });
+        lyrics.setPlayer(view.currentPlayer);
+
+        const content = new St.BoxLayout({
+            style_class: 'bct-media-content',
+            x_expand: true,
+            y_expand: true,
+        });
+        content.add_child(view.actor);
+        content.add_child(lyrics.actor);
+
+        page.add_child(switcher);
+        page.add_child(this._mediaDotsBox);
+        page.add_child(content);
+
+        // Selecting a view remembers the choice; the lyrics are only looked up
+        // while their view is shown.
+        const applyView = initial => {
+            const lyricsView = this._settings.get_boolean('lyrics-visible');
+            view.actor.visible = !lyricsView;
+            lyrics.actor.visible = lyricsView;
+            this._mediaButton.checked = !lyricsView;
+            this._lyricsButton.checked = lyricsView;
+            lyrics.setEnabled(lyricsView);
             if (!initial)
                 this._updateLayout();
         };
-        this._connect(this._settings, 'changed::lyrics-visible', () => applyLyrics(false));
-        applyLyrics(true);
+        this._connect(this._settings, 'changed::lyrics-visible', () => applyView(false));
+        this._connect(this._mpris, 'changed', () => this._syncMediaDots());
+        applyView(true);
+        this._syncMediaDots();
 
         return {label: this._('Media'), icon: 'audio-x-generic-symbolic', actor: page};
+    }
+
+    _makeMediaSwitcher(label, icon, lyricsView) {
+        const content = new St.BoxLayout({style_class: 'bct-media-switcher-content'});
+        content.add_child(new St.Icon({
+            icon_name: icon,
+            style_class: 'popup-menu-icon',
+            y_align: Clutter.ActorAlign.CENTER,
+        }));
+        content.add_child(new St.Label({
+            text: label,
+            y_align: Clutter.ActorAlign.CENTER,
+        }));
+
+        const button = new St.Button({
+            style_class: 'bct-media-switcher-button',
+            toggle_mode: true,
+            can_focus: true,
+            accessible_name: label,
+            child: content,
+        });
+        button.connect('clicked', () => {
+            // Set both states explicitly: clicking the active button would
+            // otherwise toggle it off without changing the setting.
+            this._mediaButton.checked = !lyricsView;
+            this._lyricsButton.checked = lyricsView;
+            this._settings.set_boolean('lyrics-visible', lyricsView);
+        });
+        return button;
+    }
+
+    // Keeps the player dots in step with the player list and the current player.
+    _syncMediaDots() {
+        if (!this._mediaDotsBox || !this._mediaView)
+            return;
+
+        const players = this._mpris.players;
+        const key = players.map(player => player.busName).join('|');
+        if (key !== this._mediaDotsKey) {
+            this._mediaDotsKey = key;
+            this._mediaDotsBox.destroy_all_children();
+            this._mediaDots = players.map(player => {
+                const dot = new St.Button({
+                    style_class: 'bct-media-dot',
+                    can_focus: true,
+                    accessible_name: player.identity || player.title,
+                });
+                dot.connect('clicked', () => this._mediaView.select(player.busName));
+                this._mediaDotsBox.add_child(dot);
+                return {dot, busName: player.busName};
+            });
+        }
+
+        this._mediaDotsBox.visible = players.length > 1;
+        const current = this._mediaView.currentPlayer?.busName ?? null;
+        for (const {dot, busName} of this._mediaDots) {
+            if (busName === current)
+                dot.add_style_class_name('bct-media-dot-active');
+            else
+                dot.remove_style_class_name('bct-media-dot-active');
+        }
     }
 
     // Weather on the left, world clocks on the right.
@@ -965,7 +1072,7 @@ class DateMenuOverhaul {
 
         // The media player shrinks to fit the container.
         for (const view of this._mediaViews)
-            view.setContainerSize(containerWidth, containerHeight, this._mediaReservedEm);
+            view.setContainerSize(containerWidth, containerHeight);
 
         for (const [name, active] of [['bct-fixed-width', fixedWidth], ['bct-fixed-height', fixedHeight],
             ['bct-auto-width', !fixedWidth]]) {

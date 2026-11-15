@@ -2,6 +2,19 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.33.0
+
+- Media: the player now has the cover on the left and the title, album (or
+  artist), seek bar and playback controls on the right, which uses the tab
+  width better on small screens
+- Media: the lyrics are now a separate view of the Media tab instead of a
+  column beside the player. Two buttons above the player dots switch between
+  the player and the lyrics; the choice is remembered, and no lyrics are looked
+  up while the player view is shown
+- Media: the player dots moved from the card to the page, so the switcher sits
+  above them and they keep their position in both views
+- No other page changed
+
 ## 0.32.0
 
 - Media: cover art no longer decodes and writes images on the shell's main

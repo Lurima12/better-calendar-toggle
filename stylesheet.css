@@ -108,15 +108,32 @@
     background-color: rgba(127, 127, 127, 0.4);
 }
 
-/* ---- Media page: player on the left, lyrics on the right --------------- */
+/* ---- Media page: player and lyrics are separate views ------------------- */
 
 .bct-media-page {
-    spacing: 0;
+    spacing: 0.3em;
 }
 
-/* Fixed width: the lyrics never change the size of the menu. */
+.bct-media-switcher {
+    spacing: 0.35em;
+    padding: 0.3em 0 0.15em 0;
+}
+
+.bct-media-switcher-button {
+    padding: 0.35em 0.9em;
+    border-radius: 99px;
+}
+
+.bct-media-switcher-button:checked {
+    background-color: rgba(127, 127, 127, 0.4);
+    font-weight: bold;
+}
+
+.bct-media-switcher-content {
+    spacing: 0.4em;
+}
+
 .bct-lyrics {
-    width: 23em;
     padding: 0.4em 0.8em;
 }
 
@@ -319,8 +336,11 @@
 }
 
 .bct-media-card {
-    spacing: 0.4em;
-    width: 12.5em;
+    spacing: 1em;
+}
+
+.bct-media-info {
+    spacing: 0.25em;
 }
 
 .bct-media-dots {
@@ -356,7 +376,6 @@
 }
 
 .bct-marquee {
-    width: 12.5em;
     height: 1.8em;
 }
 
@@ -385,16 +404,6 @@
 
 .bct-media-controls {
     spacing: 0.5em;
-}
-
-/* A gap between the playback buttons and the Lyrics button. */
-.bct-media-controls-row {
-    spacing: 0.7em;
-}
-
-.bct-media-lyrics-button:checked {
-    background-color: rgba(127, 127, 127, 0.4);
-    font-weight: bold;
 }
 
 .bct-media-button {
