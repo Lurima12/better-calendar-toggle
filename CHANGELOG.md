@@ -2,6 +2,19 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.35.0
+
+- Misc: the Stopwatch and Timer cards now have an "Open GNOME Clocks" button
+- Misc: while the extension's Timer is running or paused, its remaining time is
+  mirrored into GNOME Clocks' timer list as a stopped timer named "Better
+  Calendar Toggle". The entry is updated on pause/adjust and removed on reset or
+  completion; the user's own timers in Clocks are preserved
+- GNOME Clocks cannot reflect live state: its `timers` key stores only
+  `{duration, name}` and reloads as a stopped timer, and it has no stored
+  stopwatch at all. The stopwatch card can open Clocks, but its running state
+  cannot be mirrored
+- No other page changed
+
 ## 0.34.0
 
 - Notifications: added breathing room between the last notification and the

@@ -4,6 +4,8 @@ import GLib from 'gi://GLib';
 
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
+import {connectClocksTimer, disconnectClocksTimer, mirrorTimer} from '../services/clocksTimer.js';
+
 const TICK_MS = 250;
 const MIN_TIMER_MS = 60 * 1000;
 const MAX_TIMER_MS = 99 * 3600 * 1000;
@@ -35,6 +37,7 @@ export class MiscModel extends Signals.EventEmitter {
 
     start() {
         this._load();
+        connectClocksTimer();
 
         for (const key of [...Object.values(PHASE_KEYS), 'pomodoro-sessions']) {
             this._settingsSignals.push(
@@ -42,10 +45,14 @@ export class MiscModel extends Signals.EventEmitter {
         }
 
         this._checkFinished(true);
+        this._syncClocksTimer();
         this._syncTick();
     }
 
     destroy() {
+        this._syncClocksTimer(true);
+        disconnectClocksTimer();
+
         for (const id of this._settingsSignals)
             this._settings.disconnect(id);
         this._settingsSignals = [];
@@ -213,6 +220,7 @@ export class MiscModel extends Signals.EventEmitter {
             t.endAt = Date.now() + t.remaining;
             t.running = true;
         }
+        this._syncClocksTimer();
         this._changed();
     }
 
@@ -221,6 +229,7 @@ export class MiscModel extends Signals.EventEmitter {
         t.running = false;
         t.remaining = null;
         t.endAt = 0;
+        this._syncClocksTimer();
         this._changed();
     }
 
@@ -235,6 +244,7 @@ export class MiscModel extends Signals.EventEmitter {
         else
             t.duration = clamp(t.duration + deltaMs, MIN_TIMER_MS);
 
+        this._syncClocksTimer();
         this._changed();
     }
 
@@ -250,7 +260,23 @@ export class MiscModel extends Signals.EventEmitter {
         t.running = false;
         t.remaining = null;
         t.endAt = 0;
+        this._syncClocksTimer();
         this._alert?.({kind: 'timer', away});
+    }
+
+    // ------------------------------------------------- clocks (timers)
+    //
+    // GNOME Clocks stores only the configured timers (`{duration, name}`) and
+    // reads them when it starts; it has no running state to mirror, and no
+    // stored stopwatch at all. While the extension's timer is running or
+    // paused, its remaining duration is written there as one stopped timer.
+    // The write itself lives in services/clocksTimer.js.
+
+    _syncClocksTimer(remove = false) {
+        const t = this._state.timer;
+        const active = !remove && (t.running || t.remaining !== null);
+        const seconds = active ? Math.max(1, Math.ceil(this._timerRemaining() / 1000)) : 0;
+        mirrorTimer(seconds);
     }
 
     // ------------------------------------------------------------ plumbing

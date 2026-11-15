@@ -873,6 +873,17 @@
     color: rgba(160, 160, 160, 1);
 }
 
+.bct-misc-header {
+    spacing: 0.3em;
+}
+
+.bct-misc-open {
+    width: 1.9em;
+    height: 1.9em;
+    padding: 0;
+    border-radius: 99px;
+}
+
 .bct-misc-display {
     font-size: 2em;
     font-weight: bold;
