@@ -110,7 +110,7 @@ export class MiscView {
             accessible_name: onOpenClocks ? this._text.openClocks : '',
             y_align: Clutter.ActorAlign.CENTER,
             child: new St.Icon({
-                icon_name: 'preferences-system-symbolic',
+                icon_name: 'emblem-system-symbolic',
                 style_class: 'popup-menu-icon',
             }),
         });

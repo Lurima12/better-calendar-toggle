@@ -539,7 +539,6 @@ export class NotificationList {
 
         const card = new St.Button({
             style_class: 'bct-notification',
-            vertical: true,
             x_expand: true,
             can_focus: true,
             accessible_name: notification.title ?? notification.source?.title ?? '',

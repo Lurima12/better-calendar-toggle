@@ -2,6 +2,16 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.40.0
+
+- Tasks: the delete button on each task item is replaced with an edit button
+  (visible on hover); clicking the task item itself now toggles the checkbox
+- Clocks: the Stopwatch and Timer cards now use a gear icon for the
+  "Open GNOME Clocks" button
+- Weather: the hover background on the top panel now extends to cover the
+  weather icon, so the hover effect is consistent across the date menu
+- No other page changed
+
 ## 0.39.0
 
 - Notifications: added top padding to the notification list so that items

@@ -61,6 +61,17 @@ export class TodoModel extends Signals.EventEmitter {
         this._changed();
     }
 
+    edit(id, newText) {
+        const task = this._tasks.find(candidate => candidate.id === id);
+        if (!task)
+            return;
+        const clean = newText.trim().slice(0, MAX_LENGTH);
+        if (clean === '')
+            return;
+        task.text = clean;
+        this._changed();
+    }
+
     remove(id) {
         this._tasks = this._tasks.filter(task => task.id !== id);
         this._changed();

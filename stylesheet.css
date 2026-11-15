@@ -283,14 +283,14 @@
 }
 
 /* Extend date menu hover to include weather indicator */
-.panel-corner .date-menu-button:hover .bct-weather-box,
+.panel-corner:hover .bct-weather-box,
 .panel-corner .date-menu-button:focus .bct-weather-box {
     background-color: rgba(127, 127, 127, 0.18);
 }
 
 /* Also extend hover when hovering the weather box directly */
-.panel-corner .date-menu-button .bct-weather-box:hover,
-.panel-corner .date-menu-button .bct-weather-box:focus {
+.bct-weather-box:hover,
+.bct-weather-box:focus {
     background-color: rgba(127, 127, 127, 0.18);
 }
 
@@ -736,11 +736,21 @@
     text-decoration: line-through;
 }
 
-.bct-todo-remove {
+.bct-todo-edit {
     width: 1.8em;
     height: 1.8em;
     padding: 0;
     border-radius: 99px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.bct-todo-row:hover .bct-todo-edit {
+    opacity: 1;
+}
+
+.bct-todo-row:hover {
+    background-color: rgba(127, 127, 127, 0.1);
 }
 
 .bct-todo-empty {

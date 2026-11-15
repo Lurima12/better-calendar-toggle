@@ -265,7 +265,12 @@ export class TodoView {
     }
 
     _makeRow(task) {
-        const row = new St.BoxLayout({style_class: 'bct-todo-row'});
+        const row = new St.Button({
+            style_class: 'bct-todo-row',
+            can_focus: true,
+            x_expand: true,
+            x_align: Clutter.ActorAlign.START,
+        });
 
         // A round tick box
         const check = new St.Button({
@@ -282,7 +287,10 @@ export class TodoView {
             }),
         });
         check.child.opacity = task.done ? 255 : 0;
-        check.connect('clicked', () => this._model.toggle(task.id));
+        check.connect('clicked', (event) => {
+            event.stop_propagation();
+            this._model.toggle(task.id);
+        });
 
         const label = new St.Label({
             text: task.text,
@@ -293,19 +301,32 @@ export class TodoView {
         label.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         label.opacity = task.done ? 140 : 255;
 
-        const remove = new St.Button({
-            style_class: 'bct-todo-remove button',
+        // Edit button (replaces delete) - visible only on hover
+        const edit = new St.Button({
+            style_class: 'bct-todo-edit button',
             can_focus: true,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
-            accessible_name: this._text.remove,
-            child: new St.Icon({icon_name: 'window-close-symbolic', style_class: 'popup-menu-icon'}),
+            accessible_name: this._text.edit,
+            child: new St.Icon({icon_name: 'document-edit-symbolic', style_class: 'popup-menu-icon'}),
+            opacity: 0,
         });
-        remove.connect('clicked', () => this._model.remove(task.id));
+        edit.connect('clicked', (event) => {
+            event.stop_propagation();
+            this._model.edit(task.id, this._entry.get_text());
+        });
 
         row.add_child(check);
         row.add_child(label);
-        row.add_child(remove);
+        row.add_child(edit);
+
+        // Click on row toggles the task
+        row.connect('clicked', () => this._model.toggle(task.id));
+
+        // Show edit button on hover
+        row.connect('enter-event', () => edit.opacity = 255);
+        row.connect('leave-event', () => edit.opacity = 0);
+
         return row;
     }
 }
