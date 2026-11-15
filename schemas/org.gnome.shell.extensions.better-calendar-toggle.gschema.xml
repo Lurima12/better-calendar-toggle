@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="better-calendar-toggle@lurim412">
+  <schema id="org.gnome.shell.extensions.better-calendar-toggle"
+          path="/org/gnome/shell/extensions/better-calendar-toggle/">
+
+    <!-- Developer aid, not shown in the preferences -->
+    <key name="debug-layout" type="b">
+      <default>false</default>
+      <summary>Log layout sizes</summary>
+      <description>Writes the sizes of the Notifications page widgets to the journal when the page is shown. For finding layout problems.</description>
+    </key>
+
+    <!-- Size: 0 means automatic -->
+    <key name="width" type="i">
+      <range min="0" max="1600"/>
+      <default>0</default>
+      <summary>Container width</summary>
+      <description>Width in pixels. 0 means automatic. A fixed width is limited to the available screen area.</description>
+    </key>
+
+    <key name="height" type="i">
+      <range min="0" max="1200"/>
+      <default>0</default>
+      <summary>Container height</summary>
+      <description>Height in pixels. 0 means automatic. A fixed height is limited to the available screen area.</description>
+    </key>
+
+    <key name="scroll-distance" type="i">
+      <range min="2" max="50"/>
+      <default>10</default>
+      <summary>Touchpad scroll distance per page</summary>
+      <description>How far a touchpad scroll has to go to move one page of the media player or the alarms. Larger is slower.</description>
+    </key>
+
+    <!-- Pages -->
+    <key name="page-order" type="as">
+      <default>['calendar', 'notifications', 'media', 'world', 'misc']</default>
+      <summary>Page order</summary>
+      <description>Order of the tabs. Valid pages: calendar, notifications, media, world, misc.</description>
+    </key>
+
+    <key name="hidden-pages" type="as">
+      <default>[]</default>
+      <summary>Hidden pages</summary>
+      <description>Pages that are not shown. At least one page always stays visible.</description>
+    </key>
+
+    <key name="default-page" type="s">
+      <choices>
+        <choice value="calendar"/>
+        <choice value="notifications"/>
+        <choice value="media"/>
+        <choice value="world"/>
+        <choice value="misc"/>
+        <choice value="last"/>
+      </choices>
+      <default>'calendar'</default>
+      <summary>Page shown when the menu opens</summary>
+      <description>A page name, or "last" to reopen the page that was used last.</description>
+    </key>
+
+    <key name="last-page" type="s">
+      <default>'calendar'</default>
+      <summary>Last used page</summary>
+      <description>Internal. Remembers the last page for the "last" default page option.</description>
+    </key>
+
+    <key name="tab-labels" type="s">
+      <choices>
+        <choice value="auto"/>
+        <choice value="always"/>
+        <choice value="never"/>
+      </choices>
+      <default>'auto'</default>
+      <summary>Tab labels</summary>
+      <description>"auto" shows only the active label on small screens, "always" shows all labels, "never" shows icons only.</description>
+    </key>
+
+    <key name="animations" type="b">
+      <default>true</default>
+      <summary>Animations</summary>
+      <description>Small fades and slides when changing page, player or alarm, and when notifications arrive or are dismissed. They are also off when GNOME animations are off.</description>
+    </key>
+
+    <!-- Calendar page -->
+    <key name="calendar-side" type="s">
+      <choices>
+        <choice value="left"/>
+        <choice value="right"/>
+      </choices>
+      <default>'right'</default>
+      <summary>Calendar side</summary>
+      <description>Which side of the Calendar page the calendar is on. The events take the other side.</description>
+    </key>
+
+    <key name="date-header-position" type="s">
+      <choices>
+        <choice value="top"/>
+        <choice value="bottom"/>
+      </choices>
+      <default>'top'</default>
+      <summary>Date header position</summary>
+      <description>Places the day, month, date and year above or below the calendar.</description>
+    </key>
+
+    <key name="show-scrollbar" type="b">
+      <default>true</default>
+      <summary>Show scroll bars</summary>
+      <description>When off, pages still scroll but no scroll bar is drawn.</description>
+    </key>
+
+    <!-- Notifications page -->
+    <key name="notification-list" type="s">
+      <choices>
+        <choice value="custom"/>
+        <choice value="stock"/>
+      </choices>
+      <default>'custom'</default>
+      <summary>Notification list</summary>
+      <description>"custom" draws the notification list in this extension, so it fills the whole tab; "stock" uses the list of GNOME Shell.</description>
+    </key>
+
+    <key name="show-dnd-switch" type="b">
+      <default>false</default>
+      <summary>Show a Do Not Disturb button</summary>
+      <description>Adds a compact Do Not Disturb button to the Notifications page.</description>
+    </key>
+
+    <key name="dnd-position" type="s">
+      <choices>
+        <choice value="top-left"/>
+        <choice value="top-right"/>
+        <choice value="bottom-left"/>
+        <choice value="bottom-right"/>
+      </choices>
+      <default>'bottom-left'</default>
+      <summary>Do Not Disturb button position</summary>
+      <description>Corner of the notification list where the Do Not Disturb button is placed. The bottom corners are next to the Clear button.</description>
+    </key>
+
+
+    <key name="media-cover-size" type="i">
+      <range min="5" max="18"/>
+      <default>10</default>
+      <summary>Media cover size</summary>
+      <description>Size of the cover art, in text-size units (em). It shrinks automatically to fit a small container.</description>
+    </key>
+
+    <key name="media-cover-shape" type="s">
+      <choices>
+        <choice value="rounded"/>
+        <choice value="square"/>
+        <choice value="circle"/>
+      </choices>
+      <default>'rounded'</default>
+      <summary>Media cover shape</summary>
+      <description>Corner style of the cover art.</description>
+    </key>
+
+    <key name="media-button-size" type="s">
+      <choices>
+        <choice value="small"/>
+        <choice value="medium"/>
+        <choice value="large"/>
+      </choices>
+      <default>'medium'</default>
+      <summary>Playback button size</summary>
+      <description>Size of the previous, play/pause and next buttons.</description>
+    </key>
+
+    <key name="media-show-seekbar" type="b">
+      <default>true</default>
+      <summary>Show the seek bar</summary>
+      <description>Shows the progress bar and times above the playback buttons.</description>
+    </key>
+
+
+
+    <!-- Media page: lyrics -->
+    <key name="lyrics-visible" type="b">
+      <default>false</default>
+      <summary>Show lyrics</summary>
+      <description>Shows synced lyrics on the right side of the Media page. It is hidden by default, can be toggled with the Lyrics button on the Media page, and nothing is looked up while hidden.</description>
+    </key>
+
+    <key name="lyrics-provider" type="s">
+      <choices>
+        <choice value="auto"/>
+        <choice value="lrclib"/>
+        <choice value="netease"/>
+        <choice value="betterlyrics"/>
+        <choice value="local"/>
+      </choices>
+      <default>'auto'</default>
+      <summary>Lyrics provider</summary>
+      <description>"auto" tries a .lrc file next to a local audio file, then LRCLIB, then NetEase, then BetterLyrics, asking each one only when the ones before it found nothing or could not be reached. The others use just that one provider; "local" never goes online.</description>
+    </key>
+
+    <key name="lyrics-romanization" type="b">
+      <default>false</default>
+      <summary>Show the romanization</summary>
+      <description>Shows a romanization (for example of Japanese, Chinese or Korean lyrics) under the current lyric line, when the provider has one. Toggled with a button in the lyrics area.</description>
+    </key>
+
+    <key name="lyrics-translation" type="b">
+      <default>false</default>
+      <summary>Show the translation</summary>
+      <description>Shows a translation under the current lyric line, when the provider has one. Toggled with a button in the lyrics area.</description>
+    </key>
+
+    <key name="lyrics-lines" type="i">
+      <range min="3" max="9"/>
+      <default>5</default>
+      <summary>Lyric lines</summary>
+      <description>Number of lyric lines shown around the current line.</description>
+    </key>
+
+    <key name="lyrics-current-size" type="i">
+      <range min="100" max="250"/>
+      <default>135</default>
+      <summary>Highlighted line size</summary>
+      <description>Text size of the current line, in percent of the normal text size.</description>
+    </key>
+
+
+    <key name="lyrics-other-size" type="i">
+      <range min="70" max="150"/>
+      <default>95</default>
+      <summary>Other lines size</summary>
+      <description>Text size of the lines before and after the current one, in percent of the normal text size.</description>
+    </key>
+
+
+    <key name="lyrics-other-opacity" type="i">
+      <range min="20" max="100"/>
+      <default>60</default>
+      <summary>Other lines opacity</summary>
+      <description>How strongly the lines before and after the current one are drawn, in percent.</description>
+    </key>
+
+    <!-- Panel clock -->
+    <key name="use-custom-clock-format" type="b">
+      <default>false</default>
+      <summary>Use a custom panel clock format</summary>
+      <description>Replaces the date and time text on the top bar with the format below.</description>
+    </key>
+
+    <key name="clock-format" type="s">
+      <default>'%a %-d %b  %H:%M'</default>
+      <summary>Panel clock format</summary>
+      <description>A GLib date format string, for example '%a %-d %b  %H:%M'.</description>
+    </key>
+
+    <key name="show-weather-indicator" type="b">
+      <default>true</default>
+      <summary>Show the weather indicator in the panel clock</summary>
+      <description>Shows the weather icon and temperature inside the panel clock. Hidden when weather is unavailable.</description>
+    </key>
+
+
+
+    <key name="weather-position" type="s">
+      <choices>
+        <choice value="left"/>
+        <choice value="right"/>
+      </choices>
+      <default>'right'</default>
+      <summary>Weather indicator side</summary>
+      <description>Which side of the time the weather indicator is placed on.</description>
+    </key>
+
+    <key name="weather-display" type="s">
+      <choices>
+        <choice value="both"/>
+        <choice value="icon"/>
+        <choice value="temp"/>
+      </choices>
+      <default>'both'</default>
+      <summary>Weather indicator content</summary>
+      <description>Show the icon and temperature, only the icon, or only the temperature.</description>
+    </key>
+
+    <!-- Misc page: Pomodoro, stopwatch, timer -->
+    <key name="pomodoro-focus" type="i">
+      <range min="1" max="180"/>
+      <default>25</default>
+      <summary>Focus length</summary>
+      <description>Length of a Pomodoro focus session, in minutes.</description>
+    </key>
+
+    <key name="pomodoro-short" type="i">
+      <range min="1" max="60"/>
+      <default>5</default>
+      <summary>Short break length</summary>
+      <description>Length of a short break, in minutes.</description>
+    </key>
+
+
+
+    <key name="pomodoro-long" type="i">
+      <range min="1" max="120"/>
+      <default>15</default>
+      <summary>Long break length</summary>
+      <description>Length of a long break, in minutes.</description>
+    </key>
+
+    <key name="pomodoro-sessions" type="i">
+      <range min="2" max="10"/>
+      <default>4</default>
+      <summary>Sessions before a long break</summary>
+      <description>Number of focus sessions before a long break.</description>
+    </key>
+
+    <key name="misc-notifications" type="b">
+      <default>true</default>
+      <summary>Notify when a phase or timer ends</summary>
+      <description>Shows a notification when a Pomodoro phase or the timer finishes.</description>
+    </key>
+
+    <key name="misc-sound" type="b">
+      <default>true</default>
+      <summary>Play a sound when a phase or timer ends</summary>
+      <description>Plays the alarm sound of the sound theme when a Pomodoro phase or the timer finishes.</description>
+    </key>
+
+    <key name="alarms" type="s">
+      <default>'[]'</default>
+      <summary>Alarms</summary>
+      <description>Internal. The saved alarms, as text.</description>
+    </key>
+
+    <key name="alarm-storage" type="s">
+      <choices>
+        <choice value="auto"/>
+        <choice value="extension"/>
+        <choice value="clocks"/>
+      </choices>
+      <default>'auto'</default>
+      <summary>Where the alarms are kept</summary>
+      <description>"auto" and "clocks" use the alarm list of GNOME Clocks when it is installed (so the card and the Clocks app show the same alarms); "extension" keeps a separate list.</description>
+    </key>
+
+    <key name="alarm-ring-clocks" type="b">
+      <default>false</default>
+      <summary>Ring GNOME Clocks alarms from the extension</summary>
+      <description>GNOME Clocks rings its own alarms. Turn this on only if it does not, otherwise an alarm rings twice.</description>
+    </key>
+
+    <key name="alarm-snooze" type="i">
+      <range min="1" max="30"/>
+      <default>5</default>
+      <summary>Alarm snooze length</summary>
+      <description>How long an alarm is snoozed for, in minutes.</description>
+    </key>
+
+    <key name="todos" type="s">
+      <default>'[]'</default>
+      <summary>Tasks</summary>
+      <description>Internal. The task list of the Misc page, as text.</description>
+    </key>
+
+    <key name="misc-state" type="s">
+      <default>'{}'</default>
+      <summary>Pomodoro, stopwatch and timer state</summary>
+      <description>Internal. Lets the Pomodoro, stopwatch and timer keep running across restarts of the extension.</description>
+    </key>
+  </schema>
+</schemalist>

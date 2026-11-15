@@ -1,0 +1,952 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+/* All sizes use em so the layout follows the font scaling factor. */
+
+/* ---- Frame and tabs ---------------------------------------------------- */
+
+.bct-root {
+    spacing: 0.6em;
+    padding: 0.4em 0.2em 0.2em 0.2em;
+}
+
+.bct-tabbar {
+    spacing: 0.3em;
+}
+
+.bct-tab {
+    padding: 0.35em 0.8em;
+    border-radius: 99px;
+    font-weight: bold;
+}
+
+.bct-tab:hover,
+.bct-tab:focus {
+    background-color: rgba(127, 127, 127, 0.2);
+}
+
+.bct-tab:checked {
+    background-color: rgba(127, 127, 127, 0.32);
+}
+
+.bct-tab-content {
+    spacing: 0.4em;
+}
+
+.bct-compact .bct-tab {
+    padding: 0.3em 0.6em;
+}
+
+.bct-stack {
+    min-width: 36em;
+}
+
+.bct-compact .bct-stack {
+    min-width: 32em;
+}
+
+/* A fixed width or height lets the container dictate that size. */
+.bct-fixed-width .bct-stack {
+    min-width: 0;
+}
+
+.bct-fixed-height .bct-events-scroll {
+    max-height: 100em;
+}
+
+
+.bct-placeholder {
+    padding: 2em 1em;
+    color: rgba(160, 160, 160, 1);
+}
+
+/* ---- Calendar page ----------------------------------------------------- */
+
+.bct-calendar-page {
+    spacing: 1em;
+}
+
+.bct-events-column {
+    min-width: 14em;
+}
+
+.bct-events-scroll {
+    max-height: 26em;
+}
+
+.bct-calendar-column {
+    spacing: 0.5em;
+}
+
+/* ---- Notifications page ------------------------------------------------ */
+
+/* Room for the stock "No Notifications" message, which is centered over the list. */
+.bct-notifications-page {
+    min-height: 16em;
+    padding: 0 0.5em 0.6em 0.5em;
+}
+
+.bct-notifications-page .message-list {
+    border-width: 0;
+}
+
+.bct-controls {
+    padding-top: 0.4em;
+}
+
+.bct-dnd-header {
+    padding-bottom: 0.4em;
+}
+
+.bct-dnd-button {
+    width: 2.4em;
+    height: 2.4em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-dnd-button:checked {
+    background-color: rgba(127, 127, 127, 0.4);
+}
+
+/* ---- Media page: player on the left, lyrics on the right --------------- */
+
+.bct-media-page {
+    spacing: 0;
+}
+
+/* Fixed width: the lyrics never change the size of the menu. */
+.bct-lyrics {
+    width: 23em;
+    padding: 0.4em 0.8em;
+}
+
+.bct-lyrics-rows {
+    spacing: 0.3em;
+}
+
+.bct-lyric {
+    text-align: center;
+}
+
+.bct-lyric-extra {
+    color: rgba(160, 160, 160, 1);
+}
+
+/* Buttons at the bottom right; the row keeps its height when they are hidden. */
+.bct-lyrics-tools {
+    spacing: 0.4em;
+    min-height: 2.2em;
+    padding-top: 0.3em;
+}
+
+.bct-lyrics-tool {
+    padding: 0.3em 0.5em;
+    border-radius: 99px;
+}
+
+.bct-lyrics-tool:checked {
+    background-color: rgba(127, 127, 127, 0.4);
+}
+
+.bct-lyrics-status {
+    color: rgba(160, 160, 160, 1);
+    text-align: center;
+}
+
+/* ---- Notification cards (the extension's own list) ----------------------- */
+
+.bct-notification-list {
+    spacing: 0.6em;
+}
+
+.bct-notification {
+    padding: 0.6em 0.8em;
+    spacing: 0.3em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.18);
+}
+
+.bct-notification-header {
+    spacing: 0.5em;
+}
+
+.bct-notification-app {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-notification-time {
+    font-size: 0.85em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-notification-close {
+    width: 1.9em;
+    height: 1.9em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-notification-content {
+    padding: 0.2em 0.3em;
+    border-radius: 0.7em;
+}
+
+.bct-notification-content:hover,
+.bct-notification-content:focus {
+    background-color: rgba(127, 127, 127, 0.18);
+}
+
+.bct-notification-content-box {
+    spacing: 0.8em;
+}
+
+.bct-notification-icon {
+    icon-size: 2.6em;
+}
+
+.bct-notification-texts {
+    spacing: 0.15em;
+}
+
+.bct-notification-title {
+    font-weight: bold;
+}
+
+.bct-notification-body {
+    max-height: 4.4em;
+}
+
+.bct-notification-actions {
+    spacing: 0.4em;
+    padding-top: 0.2em;
+}
+
+.bct-notification-action {
+    padding: 0.3em 0.9em;
+    border-radius: 99px;
+}
+
+.bct-notification-controls {
+    padding: 0.4em 0.2em 0 0.2em;
+}
+
+.bct-notification-clear {
+    padding: 0.35em 1.1em;
+    border-radius: 99px;
+}
+
+.bct-notification-empty {
+    spacing: 0.6em;
+}
+
+.bct-notification-empty-icon {
+    icon-size: 4em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-notification-empty-label {
+    font-weight: bold;
+    color: rgba(160, 160, 160, 1);
+}
+
+/* In automatic width, a notification with a lot of text never makes the menu
+   wider than the other tabs: the page is no wider than the tab's normal width. */
+.bct-auto-width .bct-notifications-page {
+    max-width: 36em;
+}
+
+.bct-auto-width.bct-compact .bct-notifications-page {
+    max-width: 32em;
+}
+
+/* ---- Notification stacks and groups ---------------------------------------- */
+
+.bct-notification-stack {
+    spacing: 0;
+}
+
+/* The notifications behind the top one: two thin cards peeking out below it. */
+.bct-notification-stack-button {
+    padding: 0;
+}
+
+.bct-notification-edges {
+    spacing: 0;
+}
+
+.bct-notification-edge {
+    height: 0.4em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-notification-edge-1 {
+    margin: 0 0.9em;
+    border-radius: 0 0 0.7em 0.7em;
+}
+
+.bct-notification-edge-2 {
+    margin: 0 1.8em;
+    border-radius: 0 0 0.7em 0.7em;
+    background-color: rgba(127, 127, 127, 0.08);
+}
+
+.bct-notification-more {
+    padding: 0.25em 0 0.1em 0;
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-notification-group {
+    spacing: 0.6em;
+}
+
+.bct-notification-group-header {
+    spacing: 0.4em;
+    padding: 0 0.3em 0 0.5em;
+}
+
+.bct-notification-group-title {
+    font-weight: bold;
+    font-size: 1.15em;
+}
+
+/* ---- Compact media view ------------------------------------------------ */
+
+.bct-media-view {
+    padding: 0.4em 0.8em;
+}
+
+.bct-media-card {
+    spacing: 0.4em;
+    width: 12.5em;
+}
+
+.bct-media-dots {
+    spacing: 0.5em;
+    padding-bottom: 0.2em;
+}
+
+.bct-media-dot {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 99px;
+    background-color: rgba(127, 127, 127, 0.35);
+}
+
+.bct-media-dot:hover {
+    background-color: rgba(127, 127, 127, 0.6);
+}
+
+.bct-media-dot-active,
+.bct-media-dot-active:hover {
+    background-color: rgba(127, 127, 127, 1);
+}
+
+.bct-media-art-frame {
+    width: 10.5em;
+    height: 10.5em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.2);
+}
+
+.bct-media-art {
+    icon-size: 4.5em;
+}
+
+.bct-marquee {
+    width: 12.5em;
+    height: 1.8em;
+}
+
+.bct-media-title {
+    font-weight: bold;
+}
+
+.bct-media-subtitle {
+    font-size: 0.9em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-media-seekbox {
+    padding-top: 0.2em;
+}
+
+.bct-media-times {
+    padding: 0 0.2em;
+}
+
+.bct-media-time {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+    font-feature-settings: "tnum";
+}
+
+.bct-media-controls {
+    spacing: 0.5em;
+}
+
+/* A gap between the playback buttons and the Lyrics button. */
+.bct-media-controls-row {
+    spacing: 0.7em;
+}
+
+.bct-media-lyrics-button:checked {
+    background-color: rgba(127, 127, 127, 0.4);
+    font-weight: bold;
+}
+
+.bct-media-button {
+    width: 2.4em;
+    height: 2.4em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-media-primary {
+    width: 3em;
+    height: 3em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+/* Cover shape and playback button size come from settings. */
+.bct-media-shape-square .bct-media-art-frame {
+    border-radius: 0;
+}
+
+.bct-media-shape-circle .bct-media-art-frame {
+    border-radius: 99px;
+}
+
+.bct-media-buttons-small .bct-media-button {
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-media-buttons-small .bct-media-primary {
+    width: 2.5em;
+    height: 2.5em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-media-buttons-large .bct-media-button {
+    width: 3em;
+    height: 3em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-media-buttons-large .bct-media-primary {
+    width: 3.6em;
+    height: 3.6em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-media-buttons-small .bct-media-button-icon {
+    icon-size: 0.9em;
+}
+
+.bct-media-buttons-large .bct-media-button-icon {
+    icon-size: 1.5em;
+}
+
+/* ---- World and weather page -------------------------------------------- */
+
+.bct-world-row {
+    spacing: 0.7em;
+}
+
+.bct-world-column {
+    spacing: 0.6em;
+}
+
+.bct-weather-button {
+    border-radius: 1em;
+}
+
+.bct-weather-button:hover .bct-weather-card,
+.bct-weather-button:focus .bct-weather-card {
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.bct-weather-card {
+    spacing: 0.7em;
+    padding: 0.9em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-weather-header {
+    spacing: 0.8em;
+}
+
+.bct-weather-icon-large {
+    icon-size: 3.4em;
+}
+
+.bct-weather-temperature {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.bct-weather-conditions {
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-weather-location {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-weather-grid {
+    spacing: 0.5em;
+}
+
+.bct-weather-row {
+    spacing: 0.5em;
+}
+
+.bct-weather-cell {
+    padding: 0.4em 0.7em;
+    border-radius: 0.7em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-weather-cell-label {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-weather-cell-value {
+    font-weight: bold;
+}
+
+.bct-weather-forecast {
+    spacing: 0.4em;
+}
+
+.bct-weather-forecast-item {
+    spacing: 0.2em;
+    padding: 0.4em 0.2em;
+    border-radius: 0.7em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-weather-forecast-time {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-weather-forecast-temp {
+    font-weight: bold;
+}
+
+.bct-weather-updated {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+/* Shared look of the weather and world clock cards */
+.bct-card-title {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-clocks-button {
+    border-radius: 1em;
+}
+
+.bct-clocks-card {
+    spacing: 0.5em;
+    padding: 0.9em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-clocks-button:hover .bct-clocks-card,
+.bct-clocks-button:focus .bct-clocks-card {
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.bct-clock-row {
+    spacing: 0.7em;
+    padding: 0.5em 0;
+}
+
+.bct-clock-divider {
+    height: 1px;
+    background-color: rgba(127, 127, 127, 0.25);
+}
+
+.bct-clock-icon {
+    icon-size: 1.4em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-clock-labels {
+    spacing: 0.1em;
+}
+
+.bct-clock-city {
+    font-weight: bold;
+}
+
+.bct-clock-sub {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-clock-times {
+    spacing: 0.25em;
+}
+
+.bct-clock-time {
+    font-size: 1.5em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+}
+
+.bct-clock-period {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+/* ---- Task list ------------------------------------------------------------ */
+
+.bct-misc-root {
+    spacing: 0.7em;
+}
+
+.bct-todo-card {
+    spacing: 0.5em;
+    padding: 0.9em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+/* In automatic width, a long task never makes the menu wider than the other tabs. */
+.bct-auto-width .bct-todo-card {
+    max-width: 36em;
+}
+
+.bct-auto-width.bct-compact .bct-todo-card {
+    max-width: 32em;
+}
+
+.bct-todo-header {
+    spacing: 0.4em;
+}
+
+.bct-todo-count {
+    font-size: 0.85em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-todo-entry-row {
+    spacing: 0.5em;
+}
+
+.bct-todo-entry {
+    padding: 0.4em 0.8em;
+    border-radius: 99px;
+}
+
+.bct-todo-add {
+    width: 2.2em;
+    height: 2.2em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-todo-list {
+    spacing: 0.2em;
+}
+
+.bct-todo-row {
+    spacing: 0.6em;
+    padding: 0.2em 0;
+}
+
+.bct-todo-check {
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0;
+    border-radius: 99px;
+    background-color: transparent;
+    border: 2px solid rgba(160, 160, 160, 0.8);
+}
+
+.bct-todo-check:checked {
+    background-color: rgba(127, 127, 127, 0.55);
+}
+
+.bct-todo-check-icon {
+    icon-size: 0.9em;
+}
+
+.bct-todo-done {
+    text-decoration: line-through;
+}
+
+.bct-todo-remove {
+    width: 1.8em;
+    height: 1.8em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-todo-empty {
+    padding: 0.4em 0;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-todo-clear {
+    padding: 0.25em 0.9em;
+    border-radius: 99px;
+    font-size: 0.9em;
+}
+
+/* ---- Alarms card -------------------------------------------------------- */
+
+.bct-alarm-open {
+    border-radius: 1em;
+}
+
+.bct-alarm-open:hover .bct-alarm-card,
+.bct-alarm-open:focus .bct-alarm-card {
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.bct-alarm-card {
+    spacing: 0.4em;
+    padding: 0.7em 1.3em;
+    min-width: 13.5em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-alarm-header {
+    spacing: 0.4em;
+}
+
+.bct-alarm-source {
+    font-size: 0.8em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-alarm-button {
+    padding: 0.2em 0.55em;
+    border-radius: 99px;
+}
+
+.bct-alarm-save {
+    background-color: rgba(127, 127, 127, 0.35);
+    font-weight: bold;
+}
+
+.bct-alarm-empty {
+    padding: 0.8em 0;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-alarm-pager {
+    spacing: 0.4em;
+}
+
+.bct-alarm-slide {
+    spacing: 0.4em;
+    min-height: 6.5em;
+}
+
+.bct-alarm-time {
+    spacing: 0.25em;
+}
+
+.bct-alarm-time-big {
+    font-size: 2.2em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+}
+
+.bct-alarm-controls {
+    spacing: 0.6em;
+    padding-top: 0.2em;
+}
+
+.bct-alarm-toggle {
+    padding: 0.2em;
+    border-radius: 99px;
+}
+
+.bct-alarm-banner {
+    spacing: 0.4em;
+    padding: 0.5em 0.7em;
+    border-radius: 0.8em;
+    background-color: rgba(127, 127, 127, 0.3);
+}
+
+.bct-alarm-banner-label {
+    font-weight: bold;
+}
+
+.bct-alarm-editor {
+    spacing: 0.6em;
+    padding: 0.4em 0;
+}
+
+.bct-alarm-time-row {
+    spacing: 0.1em;
+}
+
+.bct-alarm-spin-value {
+    min-width: 1.3em;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+    font-feature-settings: "tnum";
+}
+
+.bct-alarm-days {
+    spacing: 0.15em;
+}
+
+.bct-alarm-day {
+    padding: 0.25em 0;
+    border-radius: 0.6em;
+    font-size: 0.7em;
+    text-align: center;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-alarm-day:checked {
+    background-color: rgba(127, 127, 127, 0.5);
+    font-weight: bold;
+}
+
+.bct-alarm-hint {
+    font-size: 0.85em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-alarm-actions {
+    spacing: 0.4em;
+}
+
+/* ---- Misc page: Pomodoro, stopwatch, timer ------------------------------ */
+
+.bct-misc-page {
+    spacing: 0.7em;
+}
+
+.bct-misc-card {
+    spacing: 0.5em;
+    min-width: 11.5em;
+    padding: 0.9em 0.7em;
+    border-radius: 1em;
+    background-color: rgba(127, 127, 127, 0.12);
+}
+
+.bct-misc-title {
+    font-weight: bold;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-misc-display {
+    font-size: 2em;
+    font-weight: bold;
+    font-feature-settings: "tnum";
+}
+
+.bct-misc-display-row {
+    spacing: 0.3em;
+}
+
+.bct-misc-pill {
+    padding: 0.35em 0.9em;
+    border-radius: 99px;
+}
+
+.bct-misc-step {
+    width: 1.9em;
+    height: 1.9em;
+    padding: 0;
+    border-radius: 99px;
+    font-weight: bold;
+}
+
+.bct-misc-detail {
+    font-weight: bold;
+}
+
+.bct-misc-extra {
+    spacing: 0.4em;
+    min-height: 2em;
+}
+
+.bct-misc-note {
+    font-size: 0.9em;
+    color: rgba(160, 160, 160, 1);
+}
+
+.bct-misc-controls {
+    spacing: 0.5em;
+    padding-top: 0.3em;
+}
+
+.bct-misc-button {
+    width: 2.4em;
+    height: 2.4em;
+    padding: 0;
+    border-radius: 99px;
+}
+
+.bct-misc-primary {
+    width: 3em;
+    height: 3em;
+    padding: 0;
+    border-radius: 99px;
+    background-color: rgba(127, 127, 127, 0.35);
+}
+
+.bct-misc-chip {
+    padding: 0.2em 0.6em;
+    font-size: 0.85em;
+}
+
+.bct-misc-dot {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 99px;
+    border: 2px solid rgba(127, 127, 127, 0.6);
+}
+
+.bct-misc-dot-filled {
+    background-color: rgba(127, 127, 127, 0.9);
+}
+
+/* ---- Panel weather indicator ------------------------------------------- */
+
+.bct-weather-box {
+    spacing: 0.2em;
+    padding: 0 0.4em;
+}
+
+.bct-weather-icon {
+    icon-size: 1.1em;
+    padding: 0;
+    margin: 0;
+}
+
+.bct-weather-label {
+    padding: 0;
+    margin: 0;
+    font-feature-settings: "tnum";
+}
