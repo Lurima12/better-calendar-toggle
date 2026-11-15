@@ -2,6 +2,17 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.36.0
+
+- GNOME Clocks: the Alarm, World clocks, Stopwatch and Timer cards now open the
+  matching Clocks tab. The panel is written to Clocks' `panel-id` before
+  launching, and a running Clocks window is asked to switch with its
+  `win.set-page` action when available
+- Alarms: the Edit button moved to the header, immediately left of Add; the
+  "GNOME Clocks" source label is hidden
+- Misc: the button that opens Clocks now uses a gear icon
+- No other page changed
+
 ## 0.35.0
 
 - Misc: the Stopwatch and Timer cards now have an "Open GNOME Clocks" button

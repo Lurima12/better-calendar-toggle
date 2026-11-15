@@ -6,6 +6,7 @@ import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
+import {openClocks} from '../services/clocksLauncher.js';
 import {fadeIn} from '../util/animation.js';
 import {loadGWeather} from '../services/gweather.js';
 import {ScrollStepper} from '../util/scrollStep.js';
@@ -143,11 +144,7 @@ export class WorldClocks {
     }
 
     _activate() {
-        try {
-            Gio.DesktopAppInfo.new('org.gnome.clocks.desktop')?.launch([], null);
-        } catch (e) {
-            console.warn(`Better Calendar Toggle: could not open GNOME Clocks: ${e.message}`);
-        }
+        openClocks('world');
         this._onActivate?.();
     }
 

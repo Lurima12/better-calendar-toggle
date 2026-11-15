@@ -7,6 +7,7 @@ import St from 'gi://St';
 
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
+import {openClocks} from '../services/clocksLauncher.js';
 import {fadeIn} from '../util/animation.js';
 import {ScrollStepper} from '../util/scrollStep.js';
 
@@ -63,30 +64,27 @@ export class AlarmView {
             x_expand: true,
         });
 
-        // Header: title and the add button
+        // Header: title, then Edit and Add on the right.
         const header = new St.BoxLayout({style_class: 'bct-alarm-header'});
-        // The header labels and the button share one center line.
         const title = new St.Label({
             text: text.title,
             style_class: 'bct-card-title',
+            x_expand: true,
+            x_align: Clutter.ActorAlign.START,
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
         });
         title.clutter_text.y_align = Clutter.ActorAlign.CENTER;
         header.add_child(title);
 
-        // Tells when the alarms are the ones of GNOME Clocks, centered in the
-        // header between the title and the add button.
-        this._sourceLabel = new St.Label({
-            text: text.fromClocks,
-            style_class: 'bct-alarm-source',
-            x_expand: true,
-            x_align: Clutter.ActorAlign.CENTER,
-            y_expand: true,
-            y_align: Clutter.ActorAlign.CENTER,
+        // Edit sits to the left of Add; both open the editor.
+        this._editButton = this._makeButton({
+            icon: 'document-edit-symbolic', name: text.edit,
+            onClicked: () => this._openEditor(this._current()),
         });
-        this._sourceLabel.clutter_text.y_align = Clutter.ActorAlign.CENTER;
-        header.add_child(this._sourceLabel);
+        this._editButton.y_align = Clutter.ActorAlign.CENTER;
+        header.add_child(this._editButton);
+
         this._addButton = this._makeButton({
             icon: 'list-add-symbolic', name: text.add, onClicked: () => this._openEditor(null),
         });
@@ -186,11 +184,7 @@ export class AlarmView {
     }
 
     _openClocks() {
-        try {
-            Gio.DesktopAppInfo.new('org.gnome.clocks.desktop')?.launch([], null);
-        } catch (e) {
-            console.warn(`Better Calendar Toggle: could not open GNOME Clocks: ${e.message}`);
-        }
+        openClocks('alarm');
         this._onOpenClocks?.();
     }
 
@@ -291,12 +285,7 @@ export class AlarmView {
             if (alarm)
                 this._model.toggle(alarm.id);
         });
-        this._editButton = this._makeButton({
-            icon: 'document-edit-symbolic', name: this._text.edit,
-            onClicked: () => this._openEditor(this._current()),
-        });
         controls.add_child(this._toggle);
-        controls.add_child(this._editButton);
 
         this._slide.add_child(this._time);
         this._slide.add_child(this._daysLabel);
@@ -604,8 +593,6 @@ export class AlarmView {
         }
         this._index = Math.max(0, Math.min(this._index, alarms.length - 1));
 
-        this._sourceLabel.visible = this._model.storage === 'clocks';
-
         // Banner while an alarm rings
         const ringing = this._model.ringing;
         this._banner.visible = ringing !== null;
@@ -628,6 +615,7 @@ export class AlarmView {
 
         // The alarm that is shown
         const alarm = alarms[this._index] ?? null;
+        this._editButton.visible = !editing && alarm !== null;
         this._empty.visible = alarm === null;
         this._slide.visible = alarm !== null;
         this._dotsBox.visible = alarms.length > 1;

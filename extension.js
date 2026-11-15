@@ -761,7 +761,6 @@ class DateMenuOverhaul {
         // Alarms, above the world clocks
         this._alarmView = new AlarmView(this._alarms, {
             title: this._('Alarms'),
-            fromClocks: this._('GNOME Clocks'),
             none: this._('No alarms'),
             add: this._('Add alarm'),
             edit: this._('Edit alarm'),

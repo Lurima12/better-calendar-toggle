@@ -751,11 +751,6 @@
     spacing: 0.4em;
 }
 
-.bct-alarm-source {
-    font-size: 0.8em;
-    color: rgba(160, 160, 160, 1);
-}
-
 .bct-alarm-button {
     padding: 0.2em 0.55em;
     border-radius: 99px;

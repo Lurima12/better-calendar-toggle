@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import Clutter from 'gi://Clutter';
-import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
+
+import {openClocks} from '../services/clocksLauncher.js';
 
 const DISPLAY_INTERVAL_MS = 100;
 
@@ -109,7 +110,7 @@ export class MiscView {
             accessible_name: onOpenClocks ? this._text.openClocks : '',
             y_align: Clutter.ActorAlign.CENTER,
             child: new St.Icon({
-                icon_name: 'preferences-system-time-symbolic',
+                icon_name: 'preferences-system-symbolic',
                 style_class: 'popup-menu-icon',
             }),
         });
@@ -180,13 +181,9 @@ export class MiscView {
         button.opacity = enabled ? 255 : 90;
     }
 
-    // Opens GNOME Clocks from the Stopwatch and Timer cards and closes the menu.
-    _openClocks() {
-        try {
-            Gio.DesktopAppInfo.new('org.gnome.clocks.desktop')?.launch([], null);
-        } catch (e) {
-            console.warn(`Better Calendar Toggle: could not open GNOME Clocks: ${e.message}`);
-        }
+    // Opens GNOME Clocks on the matching panel and closes the menu.
+    _openClocks(panel) {
+        openClocks(panel);
         this._onActivate?.();
     }
 
@@ -228,7 +225,7 @@ export class MiscView {
 
     _buildStopwatch() {
         const t = this._text;
-        const card = this._makeCard(t.stopwatch, () => this._openClocks());
+        const card = this._makeCard(t.stopwatch, () => this._openClocks('stopwatch'));
         this._stopwatch = card;
 
         this._stopwatchLaps = new St.Label({
@@ -256,7 +253,7 @@ export class MiscView {
 
     _buildTimer() {
         const t = this._text;
-        const card = this._makeCard(t.timer, () => this._openClocks());
+        const card = this._makeCard(t.timer, () => this._openClocks('timer'));
         this._timer = card;
 
         for (const [label, minutes] of [[t.minusOne, -1], [t.plusOne, 1], [t.plusFive, 5]]) {
