@@ -732,9 +732,7 @@ class DateMenuOverhaul {
             y_expand: true,
         });
         this._weatherPlaceholder = this._makePlaceholder(this._('No weather to show'));
-        this._clocksPlaceholder = this._makePlaceholder(this._('No world clocks to show'));
         weatherColumn.add_child(this._weatherPlaceholder);
-        clocksColumn.add_child(this._clocksPlaceholder);
 
         this._clocks = dateMenu._clocksItem ?? null;
         this._weather = dateMenu._weatherItem ?? null;
@@ -793,6 +791,7 @@ class DateMenuOverhaul {
             this._worldClocks = new WorldClocks(dateMenu._clock ?? null, {
                 title: this._('World clocks'),
                 openClocks: this._('Open Clocks'),
+                none: this._('No world clocks'),
                 today: this._('Today'),
                 tomorrow: this._('Tomorrow'),
                 yesterday: this._('Yesterday'),
@@ -804,6 +803,10 @@ class DateMenuOverhaul {
         } else if (this._clocks) {
             this._setProps(this._clocks, {x_expand: true});
             this._reparent(this._clocks, clocksColumn);
+            // The stock section hides itself when it is empty; keep a
+            // placeholder below it so the column still ends with a card.
+            this._clocksPlaceholder = this._makePlaceholder(this._('No world clocks to show'));
+            clocksColumn.add_child(this._clocksPlaceholder);
         }
 
         row.add_child(weatherColumn);

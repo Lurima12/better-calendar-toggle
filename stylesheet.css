@@ -90,7 +90,7 @@
 }
 
 .bct-controls {
-    padding-top: 0.4em;
+    padding-top: 1em;
 }
 
 .bct-dnd-header {
@@ -246,7 +246,7 @@
 }
 
 .bct-notification-controls {
-    padding: 0.4em 0.2em 0 0.2em;
+    padding: 1em 0.2em 0.2em 0.2em;
 }
 
 .bct-notification-clear {
@@ -602,6 +602,11 @@
 
 .bct-clock-labels {
     spacing: 0.1em;
+}
+
+.bct-clock-empty {
+    padding: 0.8em 0;
+    color: rgba(160, 160, 160, 1);
 }
 
 .bct-clock-city {

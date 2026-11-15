@@ -2,6 +2,18 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.34.0
+
+- Notifications: added breathing room between the last notification and the
+  Do Not Disturb / Clear buttons, in both the extension's list and the stock one
+- Weather & Clocks: the right column is now fixed — Alarms at the top and World
+  clocks at the bottom, whatever either card contains
+- World clocks: the empty state is now the same card with the "World clocks"
+  title and a "No world clocks" line, instead of a separate placeholder that
+  moved the alarms around; the stock fallback keeps its placeholder below the
+  clocks
+- No other page changed
+
 ## 0.33.0
 
 - Media: the player now has the cover on the left and the title, album (or

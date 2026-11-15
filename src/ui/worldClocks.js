@@ -78,6 +78,16 @@ export class WorldClocks {
         });
         content.add_child(title);
         content.add_child(this._rows);
+        this._empty = new St.Label({
+            text: text.none,
+            style_class: 'bct-clock-empty',
+            x_expand: true,
+            y_expand: true,
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
+            visible: false,
+        });
+        content.add_child(this._empty);
         content.add_child(this._dotsBox);
 
         this.actor = new St.Button({
@@ -176,7 +186,12 @@ export class WorldClocks {
             .map(({name, timezone}) => ({name, time: GLib.DateTime.new_now(timezone)}))
             .sort((a, b) => a.time.get_utc_offset() - b.time.get_utc_offset());
 
-        this.actor.visible = this._entries.length > 0;
+        // The card stays visible when it is empty: it shows the title and an
+        // empty line inside the same card, like the alarms and weather cards.
+        const empty = this._entries.length === 0;
+        this.actor.visible = true;
+        this._rows.visible = !empty;
+        this._empty.visible = empty;
         // Keep a small page when cities were removed on other pages.
         this._page = Math.max(0, Math.min(this._page, this._pageCount() - 1));
         this._renderPage(0);
