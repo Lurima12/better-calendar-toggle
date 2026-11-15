@@ -2,6 +2,21 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.31.0
+
+- GNOME 50 cleanup: removed the stock-media reparent code and the `_sectionList`
+  layout adjustment. GNOME 50's date menu has no media section (media lives in
+  Quick Settings), and its notification list is a `CalendarMessageList` with a
+  `MessageView`, so both paths were dead code
+- Media: removed the temporary per-click diagnostic log trail; a player whose app
+  cannot be found is still reported once, and real activation failures are still
+  logged
+- Stability: restoring stock actor properties and visibility in `disable()` is now
+  guarded per actor, so one stale actor cannot abort the rest of the cleanup
+- Compatibility: the declared `shell-version` is now 50 only, the version tested
+  here; earlier versions can be added back once tested
+- No user-facing feature changed
+
 ## 0.30.0
 
 - Packaging: the archive now includes `src/`, `README.md`, `CHANGELOG.md` and

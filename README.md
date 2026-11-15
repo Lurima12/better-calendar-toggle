@@ -38,9 +38,10 @@ Open them with `gnome-extensions prefs better-calendar-toggle@lurim412` or from 
 
 ## Compatibility
 
-Declared for GNOME Shell 45 to 50 (ES module extensions) and developed on GNOME
-Shell 50.1. The extension relies on the stock date menu's internals and leaves it
-untouched if the layout is not recognised.
+Declared for GNOME Shell 50 (ES module extensions) and tested on 50.1. The
+extension relies on the stock date menu's internals and leaves it untouched if
+the layout is not recognised. Earlier Shell versions can be added back after
+testing; the private date-menu layout is the part that changes between releases.
 
 ## Build and install (development)
 

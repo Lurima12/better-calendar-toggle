@@ -3,15 +3,10 @@
   "name": "Better Calendar Toggle",
   "description": "Overhauls the date menu into separate pages: Calendar (events and calendar, either side), Notifications, Media with a compact player and synced lyrics, World Clocks & Weather, and a Misc page with Pomodoro, Stopwatch and Timer. Customizable size and page order, optional Do Not Disturb button, panel clock formatter and a weather indicator in the clock. Built for small screens such as 1366x768 and follows font scaling.",
   "shell-version": [
-    "45",
-    "46",
-    "47",
-    "48",
-    "49",
     "50"
   ],
-  "version": 30,
-  "version-name": "0.30.0",
+  "version": 31,
+  "version-name": "0.31.0",
   "gettext-domain": "better-calendar-toggle@lurim412",
   "settings-schema": "org.gnome.shell.extensions.better-calendar-toggle"
 }

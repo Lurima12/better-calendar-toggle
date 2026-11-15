@@ -228,13 +228,11 @@ class MprisPlayer {
     }
 
     // Activates the player's app; true when the app was found and raised
-    // (or started). Every step taken is noted in the log, so a player whose
-    // app cannot be found can be diagnosed from the outside.
+    // (or started). Only real failures to activate or start a candidate are
+    // logged; the caller reports when no app could be found at all.
     _activateApp() {
         const appSystem = Shell.AppSystem.get_default();
         const candidates = this._appCandidates();
-        console.warn(`Better Calendar Toggle: looking for the app of ${
-            this.identity || this.busName} (candidates: ${candidates.join(', ')})`);
         const activate = app => {
             try {
                 app.activate();
@@ -251,8 +249,6 @@ class MprisPlayer {
         // as DesktopEntry directly, like "xyz.lalaggi.semitone").
         for (const candidate of candidates) {
             const app = appSystem.lookup_app(`${candidate}.desktop`);
-            console.warn(`Better Calendar Toggle: lookup '${candidate}.desktop' -> ${
-                app ? 'found' : 'no'}`);
             if (app)
                 return activate(app);
         }
@@ -264,11 +260,8 @@ class MprisPlayer {
         for (const app of appSystem.get_running()) {
             const name = String(app.get_name?.() ?? '').toLowerCase();
             if (name && candidates.some(candidate =>
-                name.includes(candidate.toLowerCase()))) {
-                console.warn(`Better Calendar Toggle: matched the running app '${
-                    app.get_name?.()}'`);
+                name.includes(candidate.toLowerCase())))
                 return activate(app);
-            }
         }
 
         // Apps whose name, description or keywords mention a candidate.
@@ -277,11 +270,8 @@ class MprisPlayer {
                 for (const group of Gio.DesktopAppInfo.search(candidate.toLowerCase()) ?? []) {
                     for (const id of group) {
                         const other = appSystem.lookup_app(id);
-                        if (other) {
-                            console.warn(`Better Calendar Toggle: searched '${
-                                candidate}' -> ${id}`);
+                        if (other)
                             return activate(other);
-                        }
                     }
                 }
             }
@@ -297,8 +287,6 @@ class MprisPlayer {
                 Gio.DesktopAppInfo.new(candidate);
             if (info) {
                 try {
-                    console.warn(`Better Calendar Toggle: launching '${
-                        info.get_id()}' directly`);
                     info.launch([], null);
                     return true;
                 } catch (e) {
@@ -307,8 +295,6 @@ class MprisPlayer {
                 }
             }
         }
-        console.warn(`Better Calendar Toggle: no app matched any of ${
-            candidates.join(', ')}`);
         return false;
     }
 

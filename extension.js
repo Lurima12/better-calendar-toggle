@@ -74,7 +74,6 @@ class DateMenuOverhaul {
         this._revealId = 0;
         this._revealTarget = null;
         this._stack = null;
-        this._trash = null;
 
         this._pages = new Map();
         this._tabs = new Map();
@@ -89,7 +88,6 @@ class DateMenuOverhaul {
         this._mediaViews = [];
         this._lyricsViews = [];
         this._mediaReservedEm = NO_LYRICS_RESERVED_EM;
-        this._enabledPages = new Set();
         this._miscView = null;
         this._weatherDetails = null;
         this._worldClocks = null;
@@ -202,11 +200,8 @@ class DateMenuOverhaul {
             x_expand: true,
             y_expand: true,
         });
-        // Hidden holder for stock widgets we replace (the stock media section).
-        this._trash = new St.BoxLayout({visible: false});
         this._root.add_child(this._tabScroll);
         this._root.add_child(this._stack);
-        this._root.add_child(this._trash);
 
         // Only pages that are both available and enabled are built, so the
         // stock widgets of a disabled page are never touched.
@@ -222,7 +217,6 @@ class DateMenuOverhaul {
             misc: () => this._buildMiscPage(),
         };
         const order = this._resolveOrder(available);
-        this._enabledPages = new Set(order);
         for (const id of order)
             this._addPage(id, builders[id]());
 
@@ -279,12 +273,21 @@ class DateMenuOverhaul {
         }
 
         for (const {actor, values} of this._props.reverse()) {
-            for (const [name, value] of Object.entries(values))
-                actor[name] = value;
+            try {
+                for (const [name, value] of Object.entries(values))
+                    actor[name] = value;
+            } catch (e) {
+                console.warn(`Better Calendar Toggle: could not restore an actor property: ${e.message}`);
+            }
         }
 
-        for (const {actor, visible} of this._hidden.reverse())
-            actor.visible = visible;
+        for (const {actor, visible} of this._hidden.reverse()) {
+            try {
+                actor.visible = visible;
+            } catch (e) {
+                console.warn(`Better Calendar Toggle: could not restore an actor's visibility: ${e.message}`);
+            }
+        }
 
         this._root?.destroy();
 
@@ -424,12 +427,6 @@ class DateMenuOverhaul {
         });
         page.add_child(column);
 
-        // The stock media section is replaced by the Media page (when that
-        // page is turned off, the stock media section stays where it was).
-        const stockMedia = this._findMediaSection(messageList);
-        if (stockMedia && this._enabledPages.has('media'))
-            this._reparent(stockMedia, this._trash);
-
         // The stock list has a fixed width and is aligned to the start, which
         // leaves empty space beside it when the tab is wider. Make it fill the
         // whole width and height of the tab instead.
@@ -448,18 +445,11 @@ class DateMenuOverhaul {
         if (messageList._scrollView) {
             this._listScroll = messageList._scrollView;
             // Records the original values so they are restored on teardown.
-            // Overlay scroll bars take no space beside the notifications, and
-            // the section list (which holds the cards) fills the scroll view.
+            // Overlay scroll bars take no space beside the notifications.
             this._setProps(this._listScroll, {
                 vscrollbar_policy: this._scrollPolicy(),
                 hscrollbar_policy: St.PolicyType.NEVER,
                 overlay_scrollbars: true,
-            });
-        }
-        if (messageList._sectionList) {
-            this._setProps(messageList._sectionList, {
-                x_expand: true,
-                x_align: Clutter.ActorAlign.FILL,
             });
         }
 
@@ -1152,14 +1142,6 @@ class DateMenuOverhaul {
         while (current && current.get_parent() !== ancestor)
             current = current.get_parent();
         return current ?? null;
-    }
-
-    _findMediaSection(messageList) {
-        if (messageList._mediaSection)
-            return messageList._mediaSection;
-
-        const sections = messageList._sectionList?.get_children?.() ?? [];
-        return sections.find(child => child.constructor?.name?.includes('Media')) ?? null;
     }
 }
 

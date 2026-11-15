@@ -518,11 +518,8 @@ export class MediaView extends Signals.EventEmitter {
     // Brings up the app that plays the media, and closes the menu.
     _openPlayer() {
         const player = this._player();
-        if (!player) {
-            console.warn('Better Calendar Toggle: cover clicked without a media player');
-        } else {
+        if (player)
             player.raise();
-        }
         this._onActivate?.();
     }
 
@@ -584,13 +581,8 @@ export class MediaView extends Signals.EventEmitter {
             if (Math.abs(distance) >= SWIPE_DISTANCE) {
                 this._move(distance < 0 ? 1 : -1);
             } else if (Math.abs(distance) <= CLICK_TOLERANCE) {
-                if (wasOnArt) {
-                    console.warn('Better Calendar Toggle: cover was tapped, opening the player');
+                if (wasOnArt)
                     this._openPlayer();
-                } else {
-                    console.warn(`Better Calendar Toggle: card tapped, but not on the cover (source was ${
-                        event.get_source()?.constructor?.name ?? 'unknown'})`);
-                }
             }
             break;
         }
