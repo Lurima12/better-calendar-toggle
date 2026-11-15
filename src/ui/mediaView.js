@@ -312,11 +312,19 @@ export class MediaView extends Signals.EventEmitter {
         this._card.add_child(this._frame);
         this._card.add_child(this._info);
 
-        this._placeholder = new St.Label({
-            text: text.noMedia,
+        this._placeholder = new St.BoxLayout({
             style_class: 'bct-placeholder',
+            vertical: true,
+            x_expand: true,
+            y_expand: true,
             x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
         });
+        this._placeholder.add_child(new St.Label({
+            text: text.noMedia,
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
+        }));
 
         this.actor.add_child(this._probe);
         this.actor.add_child(this._card);

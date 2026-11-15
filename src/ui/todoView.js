@@ -264,12 +264,10 @@ export class TodoView {
             fadeIn(this._list, {x: direction * 24});
     }
 
-    _makeRow(task) {
-        const row = new St.Button({
+_makeRow(task) {
+        const row = new St.BoxLayout({
             style_class: 'bct-todo-row',
-            can_focus: true,
             x_expand: true,
-            x_align: Clutter.ActorAlign.START,
         });
 
         // A round tick box
@@ -301,6 +299,21 @@ export class TodoView {
         label.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         label.opacity = task.done ? 140 : 255;
 
+        // Pin button (priority) - visible only on hover, to the left of edit
+        const pin = new St.Button({
+            style_class: 'bct-todo-pin button',
+            can_focus: true,
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
+            accessible_name: this._text.pin,
+            child: new St.Icon({icon_name: 'draw-pin-symbolic', style_class: 'popup-menu-icon'}),
+            opacity: 0,
+        });
+        pin.connect('clicked', (event) => {
+            event.stop_propagation();
+            this._model.togglePin(task.id);
+        });
+
         // Edit button (replaces delete) - visible only on hover
         const edit = new St.Button({
             style_class: 'bct-todo-edit button',
@@ -319,14 +332,40 @@ export class TodoView {
         row.add_child(check);
         row.add_child(label);
         row.add_child(edit);
+        row.add_child(pin);
 
-        // Click on row toggles the task
-        row.connect('clicked', () => this._model.toggle(task.id));
+        // Wrap row in a button for click-to-toggle
+        const rowEventBox = new St.Button({
+            style_class: 'bct-todo-row-click',
+            x_expand: true,
+            can_focus: true,
+            child: row,
+        });
+        rowEventBox.connect('clicked', () => this._model.toggle(task.id));
 
-        // Show edit button on hover
-        row.connect('enter-event', () => edit.opacity = 255);
-        row.connect('leave-event', () => edit.opacity = 0);
+        // Container for hover effects
+        const rowWrapper = new St.BoxLayout({
+            vertical: true,
+            x_expand: true,
+        });
+        rowWrapper.add_child(row);
 
-        return row;
+        // Show edit and pin buttons on hover
+        rowWrapper.connect('enter-event', () => {
+            edit.opacity = 255;
+            pin.opacity = 255;
+        });
+        rowWrapper.connect('leave-event', () => {
+            edit.opacity = 0;
+            pin.opacity = 0;
+        });
+
+        const wrapper = new St.BoxLayout({
+            vertical: true,
+            x_expand: true,
+        });
+        wrapper.add_child(rowWrapper);
+
+        return wrapper;
     }
 }

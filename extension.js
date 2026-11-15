@@ -821,6 +821,7 @@ class DateMenuOverhaul {
             hint: this._('Add a task…'),
             add: this._('Add task'),
             edit: this._('Edit task'),
+            pin: this._('Pin task'),
             remove: this._('Remove task'),
             toggle: this._('Mark as done or not done'),
             clearDone: this._('Clear done'),

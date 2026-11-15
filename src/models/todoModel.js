@@ -48,7 +48,7 @@ export class TodoModel extends Signals.EventEmitter {
         let id = Date.now();
         while (this._tasks.some(task => task.id === id))
             id++;
-        this._tasks.push({id, text: clean, done: false});
+        this._tasks.push({id, text: clean, done: false, pinned: false});
         this._changed();
         return true;
     }
@@ -69,6 +69,14 @@ export class TodoModel extends Signals.EventEmitter {
         if (clean === '')
             return;
         task.text = clean;
+        this._changed();
+    }
+
+    togglePin(id) {
+        const task = this._tasks.find(candidate => candidate.id === id);
+        if (!task)
+            return;
+        task.pinned = !task.pinned;
         this._changed();
     }
 
@@ -97,6 +105,7 @@ export class TodoModel extends Signals.EventEmitter {
                 id: Number.isFinite(task.id) ? task.id : Date.now() + index,
                 text: task.text.slice(0, MAX_LENGTH),
                 done: task.done === true,
+                pinned: task.pinned === true,
             }));
         this._lastSaved = this._settings.get_string('todos');
     }

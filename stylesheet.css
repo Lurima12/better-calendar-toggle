@@ -745,7 +745,17 @@
     transition: opacity 150ms ease;
 }
 
-.bct-todo-row:hover .bct-todo-edit {
+.bct-todo-pin {
+    width: 1.8em;
+    height: 1.8em;
+    padding: 0;
+    border-radius: 99px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.bct-todo-row:hover .bct-todo-edit,
+.bct-todo-row:hover .bct-todo-pin {
     opacity: 1;
 }
 
