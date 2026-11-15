@@ -2,6 +2,24 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.32.0
+
+- Media: cover art no longer decodes and writes images on the shell's main
+  thread. The image is read, decoded (downscaled while decoding when it is
+  large) and written back asynchronously, so a big or slow cover cannot stall
+  the menu or the compositor
+- Media: cover processing moved to `src/services/coverArt.js`. The cache key
+  still follows the source file's modification time and size, and an image that
+  is already square is used as it is (it is never upscaled)
+- Media: cached covers now survive a reload instead of being deleted on every
+  disable. A bounded, asynchronous sweep keeps the 64 newest entries and runs
+  once when the media client starts
+- Media: a missing or unreadable cover still falls back to the original path,
+  and pending work is cancelled with the player
+- Grayscale covers are measured correctly instead of reading past their pixel
+  data
+- No user-facing feature changed
+
 ## 0.31.0
 
 - GNOME 50 cleanup: removed the stock-media reparent code and the `_sectionList`

@@ -7,121 +7,12 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Signals from 'resource:///org/gnome/shell/misc/signals.js';
 
+import {coverCachePath, ensureCoverCacheDir, makeSquareCover, trimCoverCache} from './coverArt.js';
+
 const BUS_PREFIX = 'org.mpris.MediaPlayer2.';
 const OBJECT_PATH = '/org/mpris/MediaPlayer2';
 const PLAYER_IFACE = 'org.mpris.MediaPlayer2.Player';
 const ROOT_IFACE = 'org.mpris.MediaPlayer2';
-
-// Remote cover art is saved here so it can be drawn as a shaped background.
-const COVER_CACHE_DIR = GLib.build_filenamev([GLib.get_user_cache_dir(), 'better-calendar-toggle']);
-
-// Covers that are not square (a video thumbnail, often with black bars baked
-// in) are cropped to a centered square, so the cover shape always applies.
-const pixbufModule = import('gi://GdkPixbuf').then(module => module.default).catch(() => null);
-
-const DARK_LEVEL = 24;
-const MAX_BAR_FRACTION = 0.35;
-const SQUARE_SIZE = 512;
-
-// The part of the picture inside black bars at the top and bottom or at the
-// left and right.
-function findContent(pixbuf) {
-    const width = pixbuf.get_width();
-    const height = pixbuf.get_height();
-    const channels = pixbuf.get_n_channels();
-    const stride = pixbuf.get_rowstride();
-    const pixels = pixbuf.get_pixels();
-
-    const dark = (x, y) => {
-        const i = y * stride + x * channels;
-        return (pixels[i] * 299 + pixels[i + 1] * 587 + pixels[i + 2] * 114) / 1000 <= DARK_LEVEL;
-    };
-    const rowDark = y => {
-        for (let x = 0; x < width; x += 4) {
-            if (!dark(x, y))
-                return false;
-        }
-        return true;
-    };
-
-    let top = 0;
-    while (top < height * MAX_BAR_FRACTION && rowDark(top))
-        top++;
-    let bottom = height;
-    while (height - bottom < height * MAX_BAR_FRACTION && bottom > top + 1 && rowDark(bottom - 1))
-        bottom--;
-
-    const columnDark = x => {
-        for (let y = top; y < bottom; y += 4) {
-            if (!dark(x, y))
-                return false;
-        }
-        return true;
-    };
-    let left = 0;
-    while (left < width * MAX_BAR_FRACTION && columnDark(left))
-        left++;
-    let right = width;
-    while (width - right < width * MAX_BAR_FRACTION && right > left + 1 && columnDark(right - 1))
-        right--;
-
-    return {x: left, y: top, width: right - left, height: bottom - top};
-}
-
-// Returns the path of a square version of the cover at path (or path itself
-// when it is already square or cannot be processed).
-async function makeSquareCover(path) {
-    const GdkPixbuf = await pixbufModule;
-    if (!GdkPixbuf)
-        return path;
-
-    try {
-        const info = Gio.File.new_for_path(path).query_info(
-            'standard::size,time::modified', Gio.FileQueryInfoFlags.NONE, null);
-        const stamp = `${path}|${info.get_attribute_uint64('time::modified')}|${info.get_size()}`;
-        const name = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA1, stamp, -1);
-        const target = GLib.build_filenamev([COVER_CACHE_DIR, `${name}-square.png`]);
-        if (GLib.file_test(target, GLib.FileTest.EXISTS))
-            return target;
-
-        const pixbuf = GdkPixbuf.Pixbuf.new_from_file(path);
-        const content = findContent(pixbuf);
-        const side = Math.min(content.width, content.height);
-        const x = content.x + Math.floor((content.width - side) / 2);
-        const y = content.y + Math.floor((content.height - side) / 2);
-
-        if (x === 0 && y === 0 && side === pixbuf.get_width() && side === pixbuf.get_height())
-            return path;
-
-        let square = pixbuf.new_subpixbuf(x, y, side, side);
-        if (side > SQUARE_SIZE)
-            square = square.scale_simple(SQUARE_SIZE, SQUARE_SIZE, GdkPixbuf.InterpType.BILINEAR);
-
-        GLib.mkdir_with_parents(COVER_CACHE_DIR, 0o755);
-        square.savev(target, 'png', [], []);
-        return target;
-    } catch (e) {
-        return path;
-    }
-}
-
-function coverCachePath(url) {
-    const name = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA1, url, -1);
-    return GLib.build_filenamev([COVER_CACHE_DIR, `${name}.img`]);
-}
-
-function clearCoverCache() {
-    try {
-        const directory = Gio.File.new_for_path(COVER_CACHE_DIR);
-        const children = directory.enumerate_children(
-            'standard::name', Gio.FileQueryInfoFlags.NONE, null);
-        for (const info of children)
-            directory.get_child(info.get_name()).delete(null);
-        directory.delete(null);
-    } catch (e) {
-        // Nothing cached.
-    }
-}
 
 // One media player on the session bus.
 class MprisPlayer {
@@ -353,6 +244,7 @@ class MprisPlayer {
 
     destroy() {
         this._cancellable.cancel();
+        this._artToken++;
         if (this._proxy && this._proxyId)
             this._proxy.disconnect(this._proxyId);
         if (this._proxy && this._signalId)
@@ -452,11 +344,14 @@ class MprisPlayer {
             return;
 
         const finish = path => {
-            makeSquareCover(path).then(square => {
+            makeSquareCover(path, this._cancellable).then(square => {
                 if (token !== this._artToken)
                     return;
                 this.artPath = square;
                 this._notify();
+            }).catch(() => {
+                if (token === this._artToken)
+                    this._notify();
             });
         };
 
@@ -469,22 +364,54 @@ class MprisPlayer {
 
         // Remote cover art (for example from a streaming service).
         const cachePath = coverCachePath(url);
-        if (GLib.file_test(cachePath, GLib.FileTest.EXISTS)) {
-            finish(cachePath);
-            return;
-        }
+        Gio.File.new_for_path(cachePath).query_info_async('standard::type',
+            Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, this._cancellable,
+            (source, result) => {
+                let cached = false;
+                try {
+                    source.query_info_finish(result);
+                    cached = true;
+                } catch (e) {
+                    cached = false;
+                }
+                if (token !== this._artToken)
+                    return;
+                if (cached) {
+                    finish(cachePath);
+                    return;
+                }
+                this._downloadArt(url, cachePath, token, finish);
+            });
+    }
 
+    _downloadArt(url, cachePath, token, finish) {
         Gio.File.new_for_uri(url).load_bytes_async(this._cancellable, (file, result) => {
             if (token !== this._artToken)
                 return;
+
+            let bytes;
             try {
-                const [bytes] = file.load_bytes_finish(result);
-                GLib.mkdir_with_parents(COVER_CACHE_DIR, 0o755);
-                GLib.file_set_contents(cachePath, bytes.toArray());
-                finish(cachePath);
+                [bytes] = file.load_bytes_finish(result);
             } catch (e) {
                 this._notify();
+                return;
             }
+
+            ensureCoverCacheDir();
+            Gio.File.new_for_path(cachePath).replace_contents_bytes_async(
+                bytes, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION,
+                this._cancellable, (source, replaceResult) => {
+                    try {
+                        source.replace_contents_finish(replaceResult);
+                    } catch (e) {
+                        if (token === this._artToken)
+                            this._notify();
+                        return;
+                    }
+                    if (token !== this._artToken)
+                        return;
+                    finish(cachePath);
+                });
         });
     }
 
@@ -546,6 +473,8 @@ export class MprisClient extends Signals.EventEmitter {
                     // Cancelled while shutting down, or the bus is unavailable.
                 }
             });
+
+        trimCoverCache(this._cancellable).catch(() => {});
     }
 
     destroy() {
@@ -558,7 +487,6 @@ export class MprisClient extends Signals.EventEmitter {
             player.destroy();
         this._players.clear();
 
-        clearCoverCache();
         this.disconnectAll();
     }
 
