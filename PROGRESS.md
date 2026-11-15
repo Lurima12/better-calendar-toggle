@@ -4,7 +4,7 @@
 - **Name:** Better Calendar Toggle (`better-calendar-toggle@lurim412`)
 - **Goal:** Turn GNOME Shell's date menu into a multi-page productivity panel: weather and clocks, calendar and events, notifications, media with synced lyrics, and Pomodoro/stopwatch/timer.
 - **Tech stack:** GJS ES modules, GNOME Shell 50 APIs, St/Clutter, GSettings, Soup 3, GWeather 4, MPRIS.
-- **Target:** GNOME Shell 50 (tested on 50.1), Ubuntu 26.04, Wayland; 1366×768 with font scaling.
+- **Target:** GNOME Shell 50 (tested on 50.1), Ubuntu 26.04, Wayland; 1366x768 with font scaling.
 
 ## Current Status
 - [x] 0.30.0 — packaging, `COPYING`, Makefile, repo isolation
@@ -16,10 +16,11 @@
 - [x] 0.36.0 — open the matching Clocks tab; alarm header; gear icon
 - [x] 0.37.0 — media view buttons below the player, icon-only
 - [x] 0.38.0 — whole notification card clickable; notifications scroll bar preference
-- [ ] Original roadmap — card-interaction refactor (nested buttons → click actions)
+- [x] 0.39.0 — notification top spacing; weather icon hover background
+- [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
-- **Entry:** `extension.js` (extension lifecycle) → `DateMenuOverhaul` orchestrator.
+- **Entry:** `extension.js` (extension lifecycle) -> `DateMenuOverhaul` orchestrator.
 - **Modules:** `src/models` (state), `src/services` (D-Bus/network/GSettings bridges), `src/ui` (views), `src/panel`, `src/util`.
 - **Cleanup:** every signal, timeout and idle source must be disconnected or removed in `destroy()`.
 - **Versioning:** one minor bump per release; update `metadata.json` (`version`, `version-name`) and `CHANGELOG.md`.
@@ -33,4 +34,4 @@
 - Card-wide buttons coexist with inner buttons through `_swallowClick`; the planned refactor replaces that pattern.
 
 ## Exact Next Step
-Implement 0.38.0: make the whole notification card a button (with inner close/expand/action buttons swallowed), and add a `notifications-scrollbar` preference wired to the custom and stock notification lists.
+Original roadmap -- card-interaction refactor (nested buttons -> click actions) to replace the `_swallowClick` pattern throughout the codebase.

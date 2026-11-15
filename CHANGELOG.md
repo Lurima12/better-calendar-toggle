@@ -2,6 +2,15 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.39.0
+
+- Notifications: added top padding to the notification list so that items
+  don't appear cramped against the tab buttons at the top of the menu
+- Weather: extended the hover background of the panel date menu to also
+  cover the weather icon, so the hover effect is consistent across the
+  entire date menu area
+- No other page changed
+
 ## 0.38.0
 
 - Notifications: the entire notification card is now a button; clicking anywhere

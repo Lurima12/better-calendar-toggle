@@ -82,7 +82,7 @@
 /* Room for the stock "No Notifications" message, which is centered over the list. */
 .bct-notifications-page {
     min-height: 16em;
-    padding: 0 0.5em 0.6em 0.5em;
+    padding: 0.8em 0.5em 0.6em 0.5em;
 }
 
 .bct-notifications-page .message-list {
@@ -267,6 +267,31 @@
 .bct-notification-empty-label {
     font-weight: bold;
     color: rgba(160, 160, 160, 1);
+}
+
+/* ---- Panel clock weather indicator ----------------------------------------- */
+
+.bct-weather-box {
+    padding: 0.2em 0.4em;
+    border-radius: 0.4em;
+    transition: background-color 150ms ease;
+}
+
+.bct-weather-box:hover,
+.bct-weather-box:focus {
+    background-color: rgba(127, 127, 127, 0.18);
+}
+
+/* Extend date menu hover to include weather indicator */
+.panel-corner .date-menu-button:hover .bct-weather-box,
+.panel-corner .date-menu-button:focus .bct-weather-box {
+    background-color: rgba(127, 127, 127, 0.18);
+}
+
+/* Also extend hover when hovering the weather box directly */
+.panel-corner .date-menu-button .bct-weather-box:hover,
+.panel-corner .date-menu-button .bct-weather-box:focus {
+    background-color: rgba(127, 127, 127, 0.18);
 }
 
 /* In automatic width, a notification with a lot of text never makes the menu
