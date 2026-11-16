@@ -713,6 +713,7 @@
 .bct-todo-row {
     spacing: 0.6em;
     padding: 0.2em 0;
+    min-height: 2.2em;
 }
 
 .bct-todo-check {
