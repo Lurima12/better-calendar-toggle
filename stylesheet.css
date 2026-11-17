@@ -713,7 +713,6 @@
 .bct-todo-row {
     spacing: 0.6em;
     padding: 0.2em 0;
-    min-height: 2.2em;
 }
 
 .bct-todo-check {
@@ -737,6 +736,11 @@
     text-decoration: line-through;
 }
 
+.bct-todo-edit-entry {
+    padding: 0.2em 0.6em;
+    border-radius: 0.8em;
+}
+
 .bct-todo-edit {
     width: 1.8em;
     height: 1.8em;
@@ -755,12 +759,22 @@
     transition: opacity 150ms ease;
 }
 
-.bct-todo-row:hover .bct-todo-edit,
-.bct-todo-row:hover .bct-todo-pin {
+.bct-todo-row-wrapper:hover .bct-todo-edit,
+.bct-todo-row-wrapper:hover .bct-todo-pin {
     opacity: 1;
 }
 
-.bct-todo-row:hover {
+.bct-todo-row-click {
+    padding: 0;
+    border-radius: 0.8em;
+}
+
+.bct-todo-row-wrapper {
+    min-height: 2.2em;
+    border-radius: 0.8em;
+}
+
+.bct-todo-row-wrapper:hover {
     background-color: rgba(127, 127, 127, 0.1);
 }
 

@@ -25,6 +25,8 @@ export class TodoView {
         this._rendered = false;
         this._page = 0;
         this._revealLast = false;
+        this._editing = false;
+        this._editVersion = 0;
         this._scroller = new ScrollStepper();
         this._pressX = null;
         this._dots = [];
@@ -120,6 +122,7 @@ export class TodoView {
         if (this._changedId)
             this._model.disconnect(this._changedId);
         this._changedId = 0;
+        this._editVersion++;
     }
 
     _add() {
@@ -228,6 +231,10 @@ export class TodoView {
 
     // direction (-1 or 1) slides the page in from that side.
     _render(direction = 0) {
+        // The rows are rebuilt below, so any in-place edit is over and its
+        // pending callbacks must not touch the old actors.
+        this._editing = false;
+        this._editVersion++;
         const tasks = this._model.tasks;
         const done = tasks.filter(task => task.done).length;
 
@@ -264,7 +271,7 @@ export class TodoView {
             fadeIn(this._list, {x: direction * 24});
     }
 
-_makeRow(task) {
+    _makeRow(task) {
         const row = new St.BoxLayout({
             style_class: 'bct-todo-row',
             x_expand: true,
@@ -285,10 +292,7 @@ _makeRow(task) {
             }),
         });
         check.child.opacity = task.done ? 255 : 0;
-        check.connect('clicked', (event) => {
-            event.stop_propagation();
-            this._model.toggle(task.id);
-        });
+        check.connect('clicked', () => this._model.toggle(task.id));
 
         const label = new St.Label({
             text: task.text,
@@ -309,10 +313,7 @@ _makeRow(task) {
             child: new St.Icon({icon_name: 'draw-pin-symbolic', style_class: 'popup-menu-icon'}),
             opacity: 0,
         });
-        pin.connect('clicked', (event) => {
-            event.stop_propagation();
-            this._model.togglePin(task.id);
-        });
+        pin.connect('clicked', () => this._model.togglePin(task.id));
 
         // Edit button (replaces delete) - visible only on hover
         const edit = new St.Button({
@@ -324,31 +325,52 @@ _makeRow(task) {
             child: new St.Icon({icon_name: 'document-edit-symbolic', style_class: 'popup-menu-icon'}),
             opacity: 0,
         });
-        edit.connect('clicked', (event) => {
-            event.stop_propagation();
-            this._model.edit(task.id, this._entry.get_text());
-        });
-
         row.add_child(check);
         row.add_child(label);
         row.add_child(edit);
         row.add_child(pin);
 
-        // Wrap row in a button for click-to-toggle
-        const rowEventBox = new St.Button({
+        // The row itself is a button, so a click anywhere on it toggles the
+        // task. A click that lands on one of the inner buttons must not toggle
+        // it as well, so remember where the press landed; St.Button clicks
+        // are not Clutter events, so they cannot be stopped at the source.
+        let pressedOnButton = false;
+
+        const rowButton = new St.Button({
             style_class: 'bct-todo-row-click',
             x_expand: true,
             can_focus: true,
+            accessible_name: task.text,
             child: row,
         });
-        rowEventBox.connect('clicked', () => this._model.toggle(task.id));
+        rowButton.connect('clicked', () => {
+            if (pressedOnButton) {
+                pressedOnButton = false;
+                return;
+            }
+            this._model.toggle(task.id);
+        });
 
-        // Container for hover effects
+        edit.connect('clicked', () => this._startEdit(task, row, label, rowButton));
+
+        // Container for the hover effect. The button lives inside it so the
+        // highlight and the click area are the same rectangle.
         const rowWrapper = new St.BoxLayout({
             vertical: true,
             x_expand: true,
+            style_class: 'bct-todo-row-wrapper',
         });
-        rowWrapper.add_child(row);
+        rowWrapper.add_child(rowButton);
+
+        rowWrapper.connect('event', (_actor, event) => {
+            if (event.type() === Clutter.EventType.BUTTON_PRESS ||
+                event.type() === Clutter.EventType.TOUCH_BEGIN) {
+                const source = event.get_source();
+                pressedOnButton = Boolean(source) &&
+                    (check.contains(source) || edit.contains(source) || pin.contains(source));
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
 
         // Show edit and pin buttons on hover
         rowWrapper.connect('enter-event', () => {
@@ -360,12 +382,60 @@ _makeRow(task) {
             pin.opacity = 0;
         });
 
-        const wrapper = new St.BoxLayout({
-            vertical: true,
-            x_expand: true,
-        });
-        wrapper.add_child(rowWrapper);
+        return rowWrapper;
+    }
 
-        return wrapper;
+    // Swaps the task label for an entry so the text can be changed in place.
+    // Enter saves, Escape or losing focus cancels. The row button is disabled
+    // while editing, so clicking into the field cannot toggle the task.
+    _startEdit(task, row, label, rowButton) {
+        if (this._editing)
+            return;
+        this._editing = true;
+        const version = ++this._editVersion;
+        rowButton.reactive = false;
+        rowButton.can_focus = false;
+
+        const entry = new St.Entry({
+            style_class: 'bct-todo-edit-entry',
+            text: task.text,
+            can_focus: true,
+            x_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        row.replace_child(label, entry);
+
+        let finished = false;
+        const finish = save => {
+            if (finished || version !== this._editVersion)
+                return;
+            finished = true;
+            this._editing = false;
+
+            // A saved change rebuilds the list from the model, so this row and
+            // everything in it is replaced; there is nothing left to restore.
+            if (save && this._model.edit(task.id, entry.get_text()))
+                return;
+
+            rowButton.reactive = true;
+            rowButton.can_focus = true;
+            if (entry.get_parent() === row) {
+                row.replace_child(entry, label);
+                entry.destroy();
+            }
+        };
+
+        entry.clutter_text.connect('activate', () => finish(true));
+        entry.connect('key-press-event', (_actor, event) => {
+            if (event.get_key_symbol() === Clutter.KEY_Escape) {
+                finish(false);
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
+        entry.connect('key-focus-out', () => finish(false));
+
+        entry.grab_key_focus();
+        entry.clutter_text.set_selection(0, task.text.length);
     }
 }

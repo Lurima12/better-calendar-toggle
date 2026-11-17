@@ -61,15 +61,18 @@ export class TodoModel extends Signals.EventEmitter {
         this._changed();
     }
 
+    // Returns true when the text was saved, false when the task is unknown or
+    // the new text is empty.
     edit(id, newText) {
         const task = this._tasks.find(candidate => candidate.id === id);
         if (!task)
-            return;
+            return false;
         const clean = newText.trim().slice(0, MAX_LENGTH);
         if (clean === '')
-            return;
+            return false;
         task.text = clean;
         this._changed();
+        return true;
     }
 
     togglePin(id) {
