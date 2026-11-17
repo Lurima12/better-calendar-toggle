@@ -2,6 +2,14 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.43.0
+
+- Tasks: the edit button is always visible again, with the pin button to its
+  left; pinned tasks move to the top of the list and stay highlighted
+- Media: the "No media playing" label is centred in the page
+- Panel: the date menu hover background now also covers the weather indicator
+- No other page changed
+
 ## 0.42.0
 
 - Tasks: clicking a task row toggles it again; clicks on the tick box, edit

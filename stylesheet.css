@@ -271,27 +271,26 @@
 
 /* ---- Panel clock weather indicator ----------------------------------------- */
 
+/* Same pill as the clock label, so the weather indicator is covered by the
+   date menu hover. The transparent border is always present, so showing the
+   background does not move the panel. */
 .bct-weather-box {
-    padding: 0.2em 0.4em;
-    border-radius: 0.4em;
+    padding: 0 0.5em;
+    border: 3px solid transparent;
+    border-radius: 999px;
     transition: background-color 150ms ease;
 }
 
+#panel .panel-button.clock-display:hover .bct-weather-box,
+#panel .panel-button.clock-display:focus .bct-weather-box,
 .bct-weather-box:hover,
 .bct-weather-box:focus {
     background-color: rgba(127, 127, 127, 0.18);
 }
 
-/* Extend date menu hover to include weather indicator */
-.panel-corner:hover .bct-weather-box,
-.panel-corner .date-menu-button:focus .bct-weather-box {
-    background-color: rgba(127, 127, 127, 0.18);
-}
-
-/* Also extend hover when hovering the weather box directly */
-.bct-weather-box:hover,
-.bct-weather-box:focus {
-    background-color: rgba(127, 127, 127, 0.18);
+#panel .panel-button.clock-display:active .bct-weather-box,
+#panel .panel-button.clock-display:checked .bct-weather-box {
+    background-color: rgba(127, 127, 127, 0.28);
 }
 
 /* In automatic width, a notification with a lot of text never makes the menu
@@ -746,8 +745,7 @@
     height: 1.8em;
     padding: 0;
     border-radius: 99px;
-    opacity: 0;
-    transition: opacity 150ms ease;
+    transition: background-color 150ms ease;
 }
 
 .bct-todo-pin {
@@ -755,13 +753,16 @@
     height: 1.8em;
     padding: 0;
     border-radius: 99px;
-    opacity: 0;
-    transition: opacity 150ms ease;
+    transition: background-color 150ms ease;
 }
 
-.bct-todo-row-wrapper:hover .bct-todo-edit,
-.bct-todo-row-wrapper:hover .bct-todo-pin {
-    opacity: 1;
+.bct-todo-pin-active {
+    background-color: rgba(127, 127, 127, 0.35);
+}
+
+.bct-todo-edit:hover,
+.bct-todo-pin:hover {
+    background-color: rgba(127, 127, 127, 0.2);
 }
 
 .bct-todo-row-click {

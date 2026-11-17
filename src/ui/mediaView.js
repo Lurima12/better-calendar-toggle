@@ -194,6 +194,7 @@ export class MediaView extends Signals.EventEmitter {
             style_class: 'bct-media-view',
             vertical: true,
             reactive: true,
+            x_expand: true,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });

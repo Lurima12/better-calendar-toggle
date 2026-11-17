@@ -35,7 +35,10 @@ export class TodoModel extends Signals.EventEmitter {
     }
 
     get tasks() {
-        return this._tasks.map(task => ({...task}));
+        // Pinned tasks come first; the rest keep their order.
+        return this._tasks
+            .map(task => ({...task}))
+            .sort((a, b) => Number(b.pinned) - Number(a.pinned));
     }
 
     // Adds a task at the end of the list. Returns false when the text is empty

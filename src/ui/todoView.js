@@ -303,19 +303,24 @@ export class TodoView {
         label.clutter_text.ellipsize = Pango.EllipsizeMode.END;
         label.opacity = task.done ? 140 : 255;
 
-        // Pin button (priority) - visible only on hover, to the left of edit
+        // Pin button (priority) sits left of edit; pinned tasks move to the top.
         const pin = new St.Button({
-            style_class: 'bct-todo-pin button',
+            style_class: task.pinned
+                ? 'bct-todo-pin bct-todo-pin-active button'
+                : 'bct-todo-pin button',
             can_focus: true,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             accessible_name: this._text.pin,
             child: new St.Icon({icon_name: 'draw-pin-symbolic', style_class: 'popup-menu-icon'}),
-            opacity: 0,
         });
-        pin.connect('clicked', () => this._model.togglePin(task.id));
+        pin.connect('clicked', () => {
+            // Jump to the top so the pinned task stays in view.
+            this._page = 0;
+            this._model.togglePin(task.id);
+        });
 
-        // Edit button (replaces delete) - visible only on hover
+        // Edit button (replaces delete), right of pin
         const edit = new St.Button({
             style_class: 'bct-todo-edit button',
             can_focus: true,
@@ -323,12 +328,11 @@ export class TodoView {
             y_align: Clutter.ActorAlign.CENTER,
             accessible_name: this._text.edit,
             child: new St.Icon({icon_name: 'document-edit-symbolic', style_class: 'popup-menu-icon'}),
-            opacity: 0,
         });
         row.add_child(check);
         row.add_child(label);
-        row.add_child(edit);
         row.add_child(pin);
+        row.add_child(edit);
 
         // The row itself is a button, so a click anywhere on it toggles the
         // task. A click that lands on one of the inner buttons must not toggle
@@ -370,16 +374,6 @@ export class TodoView {
                     (check.contains(source) || edit.contains(source) || pin.contains(source));
             }
             return Clutter.EVENT_PROPAGATE;
-        });
-
-        // Show edit and pin buttons on hover
-        rowWrapper.connect('enter-event', () => {
-            edit.opacity = 255;
-            pin.opacity = 255;
-        });
-        rowWrapper.connect('leave-event', () => {
-            edit.opacity = 0;
-            pin.opacity = 0;
         });
 
         return rowWrapper;
