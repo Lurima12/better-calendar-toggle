@@ -2,6 +2,24 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.42.0
+
+- Tasks: clicking a task row toggles it again; clicks on the tick box, edit
+  and pin buttons no longer toggle the row as well
+- Tasks: the edit button opens an inline field holding the task text;
+  Enter saves, Escape or losing focus cancels
+- Misc: the Stopwatch and Timer cards open GNOME Clocks again
+- Release: `metadata.json` now carries the version; 0.41.0 was tagged while
+  the extension still reported itself as 0.40.0
+
+## 0.41.0
+
+- Tasks: added a pin button on each task row, shown on hover
+- Tasks: clicking a task row toggles it (the click handling was broken in
+  this release and is fixed in 0.42.0)
+- Media: the placeholder artwork is centred correctly
+- No other page changed
+
 ## 0.40.0
 
 - Tasks: the delete button on each task item is replaced with an edit button
