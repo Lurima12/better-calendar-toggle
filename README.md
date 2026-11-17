@@ -5,12 +5,33 @@ A GNOME Shell extension that overhauls the date menu into separate pages.
 ## Pages
 
 - **Calendar & Events**: events on the left, calendar on the right
-- **Notifications**: the notification list, drawn by the extension so it fills the tab (GNOME's own list can be chosen instead)
+- **Notifications**: the notification list, drawn by the extension so it fills the tab (GNOME's own list can be chosen instead). Each notification is a card that highlights on hover; clicking it opens it, the cross dismisses it, and its action buttons work
 - **Media**: the cover on the left and the title, album, seek bar and controls on the right; Media player and Lyrics buttons below the player switch between the player and synced lyrics (lyrics hidden by default)
 - **Weather & Clocks**: detailed weather for the city chosen in GNOME Weather (left, click to open it); on the right the alarms card (one alarm at a time, with dots; shares its alarms with GNOME Clocks) always at the top, and the world clock card (cities saved in GNOME Clocks) always at the bottom; the cards keep their places and look the same when empty
-- **Misc**: Pomodoro, Stopwatch, Timer and Tasks; a running or paused Timer is mirrored into GNOME Clocks as a stopped timer. Task rows show their edit and pin buttons on hover: edit changes the text in place (Enter saves), pin moves the task to the top of the list
+- **Misc**: Pomodoro, Stopwatch, Timer and Tasks; a running or paused Timer is mirrored into GNOME Clocks as a stopped timer. The play/pause button in each clock card highlights on hover. Task rows show their edit and pin buttons on hover: edit changes the text in place (Enter saves), pin moves the task to the top of the list
 
 A tab bar at the top switches pages. The menu opens on the Calendar page.
+
+## Theming
+
+The pages are drawn as cards on top of the date menu, so their colours come
+from the shell theme instead of a fixed palette:
+
+- Every card (weather, clocks, alarm, tasks, Pomodoro/stopwatch/timer,
+  notifications) and every small tile inside them has a `1px` border, like the
+  date menu and the stock notification cards.
+- On a dark menu the cards are a light `7%` white overlay with an `11%` white
+  border; on a light menu they are a `5%` black overlay with a `10%` black
+  border. Hover and focus raise the tint a little, matching how the stock
+  theme lightens menu rows and buttons on hover.
+- The play/pause buttons, tabs, day toggles, task rows and notification cards
+  draw their own hover, active and checked backgrounds, so the highlight stays
+  visible even though the extension stylesheet overrides the theme's own
+  `:hover` rules.
+- The mode is detected at runtime by sampling the date menu background
+  (`extension.js` `_syncTheme()`), so it follows GNOME light/dark as well as
+  Yaru or another custom shell theme. It is re-checked when the menu opens and
+  when the colour scheme changes.
 
 ## Settings
 

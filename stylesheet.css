@@ -17,6 +17,7 @@
     padding: 0.35em 0.8em;
     border-radius: 99px;
     font-weight: bold;
+    transition: background-color 120ms ease;
 }
 
 .bct-tab:hover,
@@ -102,6 +103,7 @@
     height: 2.4em;
     padding: 0;
     border-radius: 99px;
+    transition: background-color 120ms ease;
 }
 
 .bct-dnd-button:checked {
@@ -124,6 +126,7 @@
     height: 2.4em;
     padding: 0;
     border-radius: 99px;
+    transition: background-color 120ms ease;
 }
 
 .bct-media-switcher-button:checked {
@@ -156,6 +159,7 @@
 .bct-lyrics-tool {
     padding: 0.3em 0.5em;
     border-radius: 99px;
+    transition: background-color 120ms ease;
 }
 
 .bct-lyrics-tool:checked {
@@ -176,8 +180,10 @@
 .bct-notification {
     padding: 0.6em 0.8em;
     spacing: 0.3em;
-    border-radius: 1em;
-    background-color: rgba(127, 127, 127, 0.18);
+    border-radius: 0.7em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
+    background-color: rgba(127, 127, 127, 0.12);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .bct-notification-header {
@@ -195,14 +201,13 @@
     color: rgba(160, 160, 160, 1);
 }
 
-.bct-notification {
-    padding: 0.6em 0.8em;
-    border-radius: 0.7em;
-}
-
 .bct-notification:hover,
 .bct-notification:focus {
-    background-color: rgba(127, 127, 127, 0.18);
+    background-color: rgba(127, 127, 127, 0.22);
+}
+
+.bct-notification:active {
+    background-color: rgba(127, 127, 127, 0.3);
 }
 
 .bct-notification-inner {
@@ -513,7 +518,9 @@
     spacing: 0.7em;
     padding: 0.9em;
     border-radius: 1em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .bct-weather-header {
@@ -550,6 +557,7 @@
 .bct-weather-cell {
     padding: 0.4em 0.7em;
     border-radius: 0.7em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
 }
 
@@ -570,6 +578,7 @@
     spacing: 0.2em;
     padding: 0.4em 0.2em;
     border-radius: 0.7em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
 }
 
@@ -602,7 +611,9 @@
     spacing: 0.5em;
     padding: 0.9em;
     border-radius: 1em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .bct-clocks-button:hover .bct-clocks-card,
@@ -668,6 +679,7 @@
     spacing: 0.5em;
     padding: 0.9em;
     border-radius: 1em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
 }
 
@@ -760,6 +772,10 @@
     background-color: rgba(127, 127, 127, 0.35);
 }
 
+.bct-todo-pin-active:hover {
+    background-color: rgba(127, 127, 127, 0.45);
+}
+
 .bct-todo-edit:hover,
 .bct-todo-pin:hover {
     background-color: rgba(127, 127, 127, 0.2);
@@ -773,6 +789,7 @@
 .bct-todo-row-wrapper {
     min-height: 2.2em;
     border-radius: 0.8em;
+    transition: background-color 120ms ease;
 }
 
 .bct-todo-row-wrapper:hover {
@@ -806,7 +823,9 @@
     padding: 0.7em 1.3em;
     min-width: 13.5em;
     border-radius: 1em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .bct-alarm-header {
@@ -821,6 +840,15 @@
 .bct-alarm-save {
     background-color: rgba(127, 127, 127, 0.35);
     font-weight: bold;
+    transition: background-color 120ms ease;
+}
+
+.bct-alarm-save:hover {
+    background-color: rgba(127, 127, 127, 0.45);
+}
+
+.bct-alarm-save:active {
+    background-color: rgba(127, 127, 127, 0.55);
 }
 
 .bct-alarm-empty {
@@ -895,6 +923,11 @@
     font-size: 0.7em;
     text-align: center;
     background-color: rgba(127, 127, 127, 0.12);
+    transition: background-color 120ms ease;
+}
+
+.bct-alarm-day:hover {
+    background-color: rgba(127, 127, 127, 0.2);
 }
 
 .bct-alarm-day:checked {
@@ -922,6 +955,7 @@
     min-width: 11.5em;
     padding: 0.9em 0.7em;
     border-radius: 1em;
+    border: 1px solid rgba(127, 127, 127, 0.18);
     background-color: rgba(127, 127, 127, 0.12);
 }
 
@@ -989,6 +1023,15 @@
     padding: 0;
     border-radius: 99px;
     background-color: rgba(127, 127, 127, 0.35);
+    transition: background-color 120ms ease;
+}
+
+.bct-misc-primary:hover {
+    background-color: rgba(127, 127, 127, 0.45);
+}
+
+.bct-misc-primary:active {
+    background-color: rgba(127, 127, 127, 0.55);
 }
 
 .bct-misc-chip {
@@ -1024,4 +1067,220 @@
     padding: 0;
     margin: 0;
     font-feature-settings: "tnum";
+}
+
+/* ---- Shell theme palette -------------------------------------------------
+ *
+ * The cards and buttons are tinted overlays on the date menu, so they follow
+ * the shell theme: extension.js samples the popup menu background and sets
+ * .bct-dark or .bct-light on the root. The tints below match the colours the
+ * stock GNOME theme uses for its cards, menu items and buttons: white over a
+ * dark menu, black over a light one, with a 1px border like the popup itself.
+ * The neutral rgba(127, ...) values above are fallbacks for the first draw.
+ */
+
+.bct-dark .bct-weather-card,
+.bct-dark .bct-clocks-card,
+.bct-dark .bct-alarm-card,
+.bct-dark .bct-todo-card,
+.bct-dark .bct-misc-card,
+.bct-dark .bct-notification,
+.bct-dark .bct-weather-cell,
+.bct-dark .bct-weather-forecast-item {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.11);
+}
+
+.bct-light .bct-weather-card,
+.bct-light .bct-clocks-card,
+.bct-light .bct-alarm-card,
+.bct-light .bct-todo-card,
+.bct-light .bct-misc-card,
+.bct-light .bct-notification,
+.bct-light .bct-weather-cell,
+.bct-light .bct-weather-forecast-item {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.bct-dark .bct-weather-button:hover .bct-weather-card,
+.bct-dark .bct-weather-button:focus .bct-weather-card,
+.bct-dark .bct-clocks-button:hover .bct-clocks-card,
+.bct-dark .bct-clocks-button:focus .bct-clocks-card,
+.bct-dark .bct-alarm-open:hover .bct-alarm-card,
+.bct-dark .bct-alarm-open:focus .bct-alarm-card {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.bct-light .bct-weather-button:hover .bct-weather-card,
+.bct-light .bct-weather-button:focus .bct-weather-card,
+.bct-light .bct-clocks-button:hover .bct-clocks-card,
+.bct-light .bct-clocks-button:focus .bct-clocks-card,
+.bct-light .bct-alarm-open:hover .bct-alarm-card,
+.bct-light .bct-alarm-open:focus .bct-alarm-card {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.14);
+}
+
+/* Hovering a notification card highlights the whole item, like a menu row. */
+.bct-dark .bct-notification:hover,
+.bct-dark .bct-notification:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.bct-dark .bct-notification:active {
+    background-color: rgba(255, 255, 255, 0.17);
+}
+
+.bct-light .bct-notification:hover,
+.bct-light .bct-notification:focus {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.14);
+}
+
+.bct-light .bct-notification:active {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+
+/* Buttons that draw their own background (the stock button colours). */
+.bct-dark .bct-tab:hover,
+.bct-dark .bct-tab:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.bct-dark .bct-tab:checked,
+.bct-dark .bct-dnd-button:checked,
+.bct-dark .bct-media-switcher-button:checked,
+.bct-dark .bct-lyrics-tool:checked {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.bct-dark .bct-tab:checked:hover,
+.bct-dark .bct-dnd-button:checked:hover,
+.bct-dark .bct-media-switcher-button:checked:hover,
+.bct-dark .bct-lyrics-tool:checked:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bct-light .bct-tab:hover,
+.bct-light .bct-tab:focus {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bct-light .bct-tab:checked,
+.bct-light .bct-dnd-button:checked,
+.bct-light .bct-media-switcher-button:checked,
+.bct-light .bct-lyrics-tool:checked {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.bct-light .bct-tab:checked:hover,
+.bct-light .bct-dnd-button:checked:hover,
+.bct-light .bct-media-switcher-button:checked:hover,
+.bct-light .bct-lyrics-tool:checked:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.bct-dark .bct-misc-primary,
+.bct-dark .bct-alarm-save {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.bct-dark .bct-misc-primary:hover,
+.bct-dark .bct-alarm-save:hover {
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.bct-dark .bct-misc-primary:active,
+.bct-dark .bct-alarm-save:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.bct-light .bct-misc-primary,
+.bct-light .bct-alarm-save {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.bct-light .bct-misc-primary:hover,
+.bct-light .bct-alarm-save:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.bct-light .bct-misc-primary:active,
+.bct-light .bct-alarm-save:active {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+.bct-dark .bct-todo-pin-active {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.bct-dark .bct-todo-pin-active:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bct-light .bct-todo-pin-active {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.bct-light .bct-todo-pin-active:hover {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+.bct-dark .bct-alarm-banner {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.bct-light .bct-alarm-banner {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.bct-dark .bct-alarm-day {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.bct-dark .bct-alarm-day:hover {
+    background-color: rgba(255, 255, 255, 0.11);
+}
+
+.bct-dark .bct-alarm-day:checked {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bct-light .bct-alarm-day {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.bct-light .bct-alarm-day:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.bct-light .bct-alarm-day:checked {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+
+.bct-dark .bct-todo-row-wrapper:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.bct-light .bct-todo-row-wrapper:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.bct-dark .bct-todo-check {
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.bct-dark .bct-todo-check:checked {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.bct-light .bct-todo-check {
+    border-color: rgba(0, 0, 0, 0.35);
+}
+
+.bct-light .bct-todo-check:checked {
+    background-color: rgba(0, 0, 0, 0.15);
 }

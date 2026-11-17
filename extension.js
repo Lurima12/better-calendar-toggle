@@ -231,6 +231,7 @@ class DateMenuOverhaul {
         menuBox.add_child(this._root);
 
         this._connectUiSignals();
+        this._syncTheme();
         this._syncPlaceholders();
         this._applyScrollbars();
         this._updateLayout();
@@ -1011,6 +1012,32 @@ class DateMenuOverhaul {
 
     // -------------------------------------------------------------- layout
 
+    // The extension tints its cards and buttons with white or black overlays,
+    // so it needs to know whether the date menu is dark or light. Sampling the
+    // menu's own background follows the shell theme (GNOME light/dark, Yaru or
+    // any custom theme) without hardcoding a palette.
+    _syncTheme() {
+        if (!this._root || !this._dateMenu)
+            return;
+
+        let dark;
+        try {
+            const bg = this._dateMenu.menu.box.get_theme_node().get_background_color();
+            if (bg && bg.alpha > 0)
+                dark = bg.red + bg.green + bg.blue < 3 * 128;
+        } catch (e) {
+            // The menu is not themeable yet; fall back to the colour scheme.
+        }
+        if (dark === undefined) {
+            const scheme = St.Settings.get().color_scheme;
+            dark = scheme !== St.SystemColorScheme.PREFER_LIGHT;
+        }
+
+        this._root.remove_style_class_name('bct-dark');
+        this._root.remove_style_class_name('bct-light');
+        this._root.add_style_class_name(dark ? 'bct-dark' : 'bct-light');
+    }
+
     // Width and height are independent: a fixed one is applied as given, the
     // other stays automatic and is only limited to the screen.
     _updateLayout() {
@@ -1127,10 +1154,17 @@ class DateMenuOverhaul {
         this._connect(this._dateMenu.menu, 'open-state-changed', (_menu, isOpen) => {
             if (!isOpen)
                 return;
+            // The theme may have changed while the menu was closed.
+            this._syncTheme();
             this._updateLayout();
             this._selectPage(this._initialPage());
             this._notificationList?.refresh();
         });
+
+        // Light and dark usually switch at runtime; the menu is already open
+        // when that happens, so follow the colour scheme directly too.
+        this._connect(St.Settings.get(), 'notify::color-scheme',
+            () => this._syncTheme());
 
         this._connect(Main.layoutManager, 'monitors-changed', () => this._updateLayout());
         this._connect(global.display, 'workareas-changed', () => this._updateLayout());

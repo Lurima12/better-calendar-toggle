@@ -23,6 +23,7 @@
 - [x] 0.43.0 — always-visible pin/edit; pinned tasks on top; centred media placeholder; panel hover on weather
 - [x] 0.44.0 — removed the Stopwatch/Timer Clocks gear and the unused card header slot
 - [x] 0.45.0 — task editing fixed (entry keeps focus); hover-only edit/pin; edit state resets on menu close
+- [x] 0.46.0 — theme-adaptive cards/borders (dark/light sampling); hover for the Misc play buttons and notification items
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -35,6 +36,9 @@
 - **`St.Button::clicked` passes the clicked mouse button number, not a Clutter event.** Never call event methods on it; track the press source instead (`_swallowClick` in `worldClocks.js`, `pressedOnButton` in `todoView.js`).
 - **An `St.Entry` never keeps key focus.** On `key-focus-in` it grabs focus for its inner `ClutterText`, so the entry immediately gets `key-focus-out`; treat that as "left the field" only when the new focus is outside the entry (`todoView.js` `_startEdit`).
 - **Hover-only buttons need `reactive: true` + `track_hover: true` on the row wrapper**; CSS `:hover` alone does nothing on an `St.BoxLayout`, and opacity alone leaves invisible buttons clickable.
+- **Theming:** the extension does not hardcode a palette. `_syncTheme()` samples `menu.box.get_theme_node().get_background_color()`, tests the luminance (`< 3*128` = dark), and puts `bct-dark` or `bct-light` on `_root`; it re-runs on menu open and on `St.Settings` `notify::color-scheme`, falling back to `color_scheme !== PREFER_LIGHT`. The tinted styles live at the end of `stylesheet.css`.
+- **Extension CSS wins over theme `:hover`:** once the extension stylesheet sets a background for a button, the shell theme's own `:hover`/`:active` rule for that class no longer shows. Every interactive background (tabs, play buttons, notification cards, alarm days, task rows) must therefore declare its hover/active/checked states explicitly, for both `bct-dark` and `bct-light`.
+- **Card borders mirror the shell:** `1px` border with the same tint family as the fill (white over dark, black over light), matching the stock `popup-menu-content` and `.message` border relationship.
 
 ## Known Issues / Caveats
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.
@@ -46,3 +50,9 @@
 ## Exact Next Step
 Start the card-interaction refactor replacing the nested-button and `_swallowClick`
 pattern.
+
+## Verified for 0.46.0
+Nested headless shell (1280x800), Adwaita dark and light:
+- dark: `_root` = `bct-dark`, card `rgba(255,255,255,17)` + 1px `rgba(255,255,255,28)` border; play `46` -> hover `61`; notification `17` -> hover `30`
+- light (`color-scheme=prefer-light`): menu `#fafafb`, `_root` = `bct-light`, card `rgba(0,0,0,12)` + 1px `rgba(0,0,0,25)` border; play `30` -> hover `23`; notification `12` -> hover `25`
+- smoke: all five tabs render, notification card reactive with a 1px border, task editor opens, Pomodoro play toggles to pause

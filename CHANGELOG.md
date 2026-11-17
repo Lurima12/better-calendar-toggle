@@ -2,6 +2,22 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.46.0
+
+- Misc: the play/pause button in the Pomodoro, Stopwatch and Timer cards now
+  has a hover background, and a slightly stronger one while clicked
+- Notifications: every notification card highlights on hover and focus, like a
+  menu row, and darkens on click
+- Theming: cards and buttons now follow the shell theme. The extension samples
+  the date menu background and switches between a white tint for dark menus and
+  a black tint for light menus, matching the GNOME light/dark palettes and Yaru
+- Theming: the weather, clocks, alarm, tasks, Pomodoro/stopwatch/timer and
+  notification cards (and the small weather tiles) got a `1px` border like the
+  date menu and the stock notification cards, plus hover states for the alarm,
+  to-do and clock controls
+- The theme class is refreshed when the menu opens and when the colour scheme
+  changes, so switching light/dark does not need a re-login
+
 ## 0.45.0
 
 - Tasks: the edit button now works. The inline field keeps its focus while
