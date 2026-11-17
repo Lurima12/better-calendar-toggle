@@ -20,6 +20,7 @@
 - [x] 0.40.0 — task edit button; click-to-toggle; Clocks gear icon; weather hover
 - [x] 0.41.0 — task pin button; pinned task rows (click handling regressed here)
 - [x] 0.42.0 — repaired task clicks and in-place editing; restored the Clocks button
+- [x] 0.43.0 — always-visible pin/edit; pinned tasks on top; centred media placeholder; panel hover on weather
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -35,10 +36,9 @@
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.
 - GNOME Clocks cannot persist live timer or stopwatch state. The Timer mirror is a stopped entry.
 - `shell-version` is `["50"]` only; older versions need testing before they are re-added.
-- The task pin button stores `pinned` on the model, but nothing sorts by it or shows an indicator yet.
 - The `v0.41.0` tag points at a commit whose `metadata.json` still said `0.40.0`; 0.42.0 corrects the version.
 - Card-wide buttons coexist with inner buttons through `_swallowClick`; the planned refactor replaces that pattern.
 
 ## Exact Next Step
-Decide what the task pin is for (sort pinned tasks first, or show a badge), then start the
-card-interaction refactor replacing the nested-button and `_swallowClick` pattern.
+Start the card-interaction refactor replacing the nested-button and `_swallowClick`
+pattern.
