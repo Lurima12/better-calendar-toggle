@@ -286,8 +286,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
         const dndRow = switchRow(settings, 'show-dnd-switch', _('Do Not Disturb button'),
             _('A compact button on the Notifications page.'));
         const positionRow = comboRow(settings, 'dnd-position', _('Button position'),
-            ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
-            [_('Top left'), _('Top right'), _('Bottom left'), _('Bottom right')]);
+            ['bottom-left', 'bottom-right'],
+            [_('Bottom left'), _('Bottom right')]);
         const syncPosition = () => {
             positionRow.sensitive = dndRow.active;
         };

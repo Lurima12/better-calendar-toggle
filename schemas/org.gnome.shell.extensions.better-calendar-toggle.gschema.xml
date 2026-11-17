@@ -134,14 +134,12 @@
 
     <key name="dnd-position" type="s">
       <choices>
-        <choice value="top-left"/>
-        <choice value="top-right"/>
         <choice value="bottom-left"/>
         <choice value="bottom-right"/>
       </choices>
       <default>'bottom-left'</default>
       <summary>Do Not Disturb button position</summary>
-      <description>Corner of the notification list where the Do Not Disturb button is placed. The bottom corners are next to the Clear button.</description>
+      <description>Bottom corner of the notification list where the Do Not Disturb button is placed, next to the Clear button. A value saved by an older release (top-left or top-right) falls back to the default bottom-left corner.</description>
     </key>
 
 

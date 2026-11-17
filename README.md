@@ -43,7 +43,7 @@ Open them with `gnome-extensions prefs better-calendar-toggle@lurim412` or from 
 - **Page shown on open**: a specific page, or the last used one
 - **Tab labels**: automatic, always, or icons only
 - **Calendar & Events**: day, month, date and year above or below the calendar; show or hide scroll bars
-- **Do Not Disturb button**: optional, in any corner of the notification list
+- **Do Not Disturb button**: optional, in the bottom-left or bottom-right corner of the notification list, with a gap from the Clear button
 - **Scrolling**: touchpad distance per page for the media player and the alarms
 - **Lyrics**: the view shown by default (Media player or Lyrics; also the two buttons below the player), provider (automatic, LRCLIB, NetEase, BetterLyrics, local .lrc files), 3 to 9 lines, fonts of the highlighted and other lines
 - **Media player**: cover size and shape, playback button size, seek bar, album line, title scrolling

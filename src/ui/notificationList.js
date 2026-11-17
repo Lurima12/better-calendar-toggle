@@ -174,17 +174,12 @@ export class NotificationList {
 
         const bottom = new St.BoxLayout({style_class: 'bct-notification-controls'});
         if (this._settings.get_boolean('show-dnd-switch')) {
-            const [vertical, side] = this._settings.get_string('dnd-position').split('-');
+            const [, side] = this._settings.get_string('dnd-position').split('-');
             const dnd = this._makeDndButton();
 
-            if (vertical === 'top') {
-                dnd.x_expand = true;
-                dnd.x_align = side === 'right' ? Clutter.ActorAlign.END : Clutter.ActorAlign.START;
-                const top = new St.BoxLayout({style_class: 'bct-notification-controls'});
-                top.add_child(dnd);
-                column.add_child(top);
-                bottom.add_child(this._clearButton);
-            } else if (side === 'left') {
+            // Only the bottom corners remain. Should a legacy top-* value
+            // arrive, only its side is used, so the button stays in this row.
+            if (side === 'left') {
                 bottom.add_child(dnd);
                 bottom.add_child(this._clearButton);
             } else {

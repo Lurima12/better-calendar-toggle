@@ -2,6 +2,16 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.47.0
+
+- Notifications: the Do Not Disturb button no longer touches the Clear button;
+  the bottom row now has a gap between them, on both sides
+- Settings: the Do Not Disturb button can only be placed in the bottom-left or
+  bottom-right corner; the top-left and top-right options are gone. An old top
+  value falls back to the default bottom-left corner, and the button never
+  moves to the top
+- The stock notification list gets the same bottom-row gap and DND placement
+
 ## 0.46.0
 
 - Misc: the play/pause button in the Pomodoro, Stopwatch and Timer cards now

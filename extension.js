@@ -472,12 +472,11 @@ class DateMenuOverhaul {
         };
     }
 
-    // A compact Do Not Disturb button in one of the four corners of the
-    // notification list. The stock Clear button moves into our bottom row and
-    // the stock bottom row is hidden while ours is shown.
+    // A compact Do Not Disturb button in the bottom-left or bottom-right
+    // corner of the notification list. The stock Clear button moves into our
+    // bottom row and the stock bottom row is hidden while ours is shown.
     _addDndControls(messageList, column) {
-        const [vertical, side] = this._settings.get_string('dnd-position').split('-');
-        const alignment = side === 'right' ? Clutter.ActorAlign.END : Clutter.ActorAlign.START;
+        const [, side] = this._settings.get_string('dnd-position').split('-');
 
         const clearButton = messageList._clearButton ?? null;
         const stockRow = clearButton?.get_parent() ?? null;
@@ -485,21 +484,10 @@ class DateMenuOverhaul {
 
         const bottomRow = new St.BoxLayout({style_class: 'message-list-controls bct-controls'});
 
-        if (vertical === 'top') {
-            dnd.x_expand = true;
-            dnd.x_align = alignment;
-            const topRow = new St.BoxLayout({style_class: 'bct-dnd-header'});
-            topRow.add_child(dnd);
-            column.insert_child_at_index(topRow, 0);
-
-            if (clearButton && stockRow) {
-                this._hide(stockRow);
-                this._reparent(clearButton, bottomRow);
-                column.add_child(bottomRow);
-            }
-        } else if (clearButton && stockRow) {
+        if (clearButton && stockRow) {
             this._hide(stockRow);
-            // Left: DND, then Clear on the far side. Right: Clear, then DND beside it.
+            // Left: DND, then Clear on the far side. Right: Clear, then DND
+            // beside it. A legacy top-* value falls back to the bottom row.
             if (side === 'left') {
                 bottomRow.add_child(dnd);
                 this._reparent(clearButton, bottomRow);
@@ -507,14 +495,13 @@ class DateMenuOverhaul {
                 this._reparent(clearButton, bottomRow);
                 bottomRow.add_child(dnd);
             }
-            column.add_child(bottomRow);
         } else {
             console.warn('Better Calendar Toggle: Clear button not found, keeping the stock controls');
             dnd.x_expand = true;
-            dnd.x_align = alignment;
+            dnd.x_align = side === 'right' ? Clutter.ActorAlign.END : Clutter.ActorAlign.START;
             bottomRow.add_child(dnd);
-            column.add_child(bottomRow);
         }
+        column.add_child(bottomRow);
 
         this._notifSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.notifications'});
         this._connect(this._notifSettings, 'changed::show-banners', () => this._syncDnd());

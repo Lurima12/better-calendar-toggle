@@ -24,6 +24,7 @@
 - [x] 0.44.0 — removed the Stopwatch/Timer Clocks gear and the unused card header slot
 - [x] 0.45.0 — task editing fixed (entry keeps focus); hover-only edit/pin; edit state resets on menu close
 - [x] 0.46.0 — theme-adaptive cards/borders (dark/light sampling); hover for the Misc play buttons and notification items
+- [x] 0.47.0 — spacing between the DND and Clear buttons; DND limited to the bottom corners
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -39,6 +40,7 @@
 - **Theming:** the extension does not hardcode a palette. `_syncTheme()` samples `menu.box.get_theme_node().get_background_color()`, tests the luminance (`< 3*128` = dark), and puts `bct-dark` or `bct-light` on `_root`; it re-runs on menu open and on `St.Settings` `notify::color-scheme`, falling back to `color_scheme !== PREFER_LIGHT`. The tinted styles live at the end of `stylesheet.css`.
 - **Extension CSS wins over theme `:hover`:** once the extension stylesheet sets a background for a button, the shell theme's own `:hover`/`:active` rule for that class no longer shows. Every interactive background (tabs, play buttons, notification cards, alarm days, task rows) must therefore declare its hover/active/checked states explicitly, for both `bct-dark` and `bct-light`.
 - **Card borders mirror the shell:** `1px` border with the same tint family as the fill (white over dark, black over light), matching the stock `popup-menu-content` and `.message` border relationship.
+- **DND position:** `dnd-position` only accepts `bottom-left` and `bottom-right` since 0.47.0. Both layouts ignore the vertical part and always use the bottom row; GSettings itself falls back to the default `bottom-left` when an old `top-*` value is loaded from the keyfile/dconf.
 
 ## Known Issues / Caveats
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.
@@ -56,3 +58,9 @@ Nested headless shell (1280x800), Adwaita dark and light:
 - dark: `_root` = `bct-dark`, card `rgba(255,255,255,17)` + 1px `rgba(255,255,255,28)` border; play `46` -> hover `61`; notification `17` -> hover `30`
 - light (`color-scheme=prefer-light`): menu `#fafafb`, `_root` = `bct-light`, card `rgba(0,0,0,12)` + 1px `rgba(0,0,0,25)` border; play `30` -> hover `23`; notification `12` -> hover `25`
 - smoke: all five tabs render, notification card reactive with a 1px border, task editor opens, Pomodoro play toggles to pause
+
+## Verified for 0.47.0
+Nested headless shell, both notification-list modes and both bottom corners:
+- DND and Clear are separated by 12px (the 0.8em row spacing); no touching edges
+- the DND row sits at the bottom in every case, including after an old `top-left` value is loaded (GSettings returns the default `bottom-left`)
+- the Preferences combo lists only "Bottom left" and "Bottom right"

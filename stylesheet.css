@@ -91,11 +91,8 @@
 }
 
 .bct-controls {
+    spacing: 0.8em;
     padding-top: 1em;
-}
-
-.bct-dnd-header {
-    padding-bottom: 0.4em;
 }
 
 .bct-dnd-button {
@@ -252,6 +249,7 @@
 }
 
 .bct-notification-controls {
+    spacing: 0.8em;
     padding: 1em 0.2em 0.2em 0.2em;
 }
 
