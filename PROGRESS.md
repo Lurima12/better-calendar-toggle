@@ -22,6 +22,7 @@
 - [x] 0.42.0 — repaired task clicks and in-place editing; restored the Clocks button
 - [x] 0.43.0 — always-visible pin/edit; pinned tasks on top; centred media placeholder; panel hover on weather
 - [x] 0.44.0 — removed the Stopwatch/Timer Clocks gear and the unused card header slot
+- [x] 0.45.0 — task editing fixed (entry keeps focus); hover-only edit/pin; edit state resets on menu close
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -32,6 +33,8 @@
 - **Tooling:** `make check` (strict schema), `make pack`, `make install`; repo-local Git identity `lurim412 <lurim412@localhost>`.
 - **GNOME Clocks:** `timers` stores only `{duration, name}`; there is no stopwatch persistence; `org.gnome.clocks.state.window` `panel-id` selects the tab.
 - **`St.Button::clicked` passes the clicked mouse button number, not a Clutter event.** Never call event methods on it; track the press source instead (`_swallowClick` in `worldClocks.js`, `pressedOnButton` in `todoView.js`).
+- **An `St.Entry` never keeps key focus.** On `key-focus-in` it grabs focus for its inner `ClutterText`, so the entry immediately gets `key-focus-out`; treat that as "left the field" only when the new focus is outside the entry (`todoView.js` `_startEdit`).
+- **Hover-only buttons need `reactive: true` + `track_hover: true` on the row wrapper**; CSS `:hover` alone does nothing on an `St.BoxLayout`, and opacity alone leaves invisible buttons clickable.
 
 ## Known Issues / Caveats
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.

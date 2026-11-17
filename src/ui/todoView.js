@@ -26,6 +26,8 @@ export class TodoView {
         this._page = 0;
         this._revealLast = false;
         this._editing = false;
+        this._editEntry = null;
+        this._cancelEdit = null;
         this._editVersion = 0;
         this._scroller = new ScrollStepper();
         this._pressX = null;
@@ -114,6 +116,13 @@ export class TodoView {
         this.actor.add_child(this._clearButton);
 
         this._changedId = this._model.connect('changed', () => this._render());
+
+        // Closing the menu unmaps the card, and an edit cannot survive that.
+        this.actor.connect('notify::mapped', () => {
+            if (!this.actor.mapped)
+                this._cancelEdit?.();
+        });
+
         this._render();
     }
 
@@ -304,11 +313,14 @@ export class TodoView {
         label.opacity = task.done ? 140 : 255;
 
         // Pin button (priority) sits left of edit; pinned tasks move to the top.
+        // Both row buttons stay hidden until the pointer is over the row.
         const pin = new St.Button({
             style_class: task.pinned
                 ? 'bct-todo-pin bct-todo-pin-active button'
                 : 'bct-todo-pin button',
-            can_focus: true,
+            can_focus: false,
+            reactive: false,
+            opacity: 0,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             accessible_name: this._text.pin,
@@ -323,7 +335,9 @@ export class TodoView {
         // Edit button (replaces delete), right of pin
         const edit = new St.Button({
             style_class: 'bct-todo-edit button',
-            can_focus: true,
+            can_focus: false,
+            reactive: false,
+            opacity: 0,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             accessible_name: this._text.edit,
@@ -358,13 +372,33 @@ export class TodoView {
         edit.connect('clicked', () => this._startEdit(task, row, label, rowButton));
 
         // Container for the hover effect. The button lives inside it so the
-        // highlight and the click area are the same rectangle.
+        // highlight and the click area are the same rectangle. The wrapper
+        // tracks the pointer itself: St keeps hover on an ancestor while the
+        // pointer is over one of its children, so the buttons do not vanish
+        // when the pointer reaches them.
         const rowWrapper = new St.BoxLayout({
             vertical: true,
             x_expand: true,
+            reactive: true,
+            track_hover: true,
             style_class: 'bct-todo-row-wrapper',
         });
         rowWrapper.add_child(rowButton);
+
+        // The edit and pin buttons are only shown while the pointer is over
+        // the row. While hidden they are also not reactive, so a click near
+        // the right edge of a row still toggles the task instead of landing
+        // on an invisible button.
+        const revealButtons = () => {
+            const shown = rowWrapper.hover;
+            for (const button of [pin, edit]) {
+                button.opacity = shown ? 255 : 0;
+                button.reactive = shown;
+                button.can_focus = shown;
+            }
+        };
+        rowWrapper.connect('notify::hover', revealButtons);
+        revealButtons();
 
         rowWrapper.connect('event', (_actor, event) => {
             if (event.type() === Clutter.EventType.BUTTON_PRESS ||
@@ -383,8 +417,16 @@ export class TodoView {
     // Enter saves, Escape or losing focus cancels. The row button is disabled
     // while editing, so clicking into the field cannot toggle the task.
     _startEdit(task, row, label, rowButton) {
+        // Only one field is open at a time; editing another task first
+        // discards the text that was being typed, like clicking away.
         if (this._editing)
+            this._cancelEdit?.();
+
+        // The click may have rebuilt the list (a click that also reached the
+        // row button toggles the task), leaving the row and label detached.
+        if (label.get_parent() !== row || !row.get_parent())
             return;
+
         this._editing = true;
         const version = ++this._editVersion;
         rowButton.reactive = false;
@@ -400,11 +442,18 @@ export class TodoView {
         row.replace_child(label, entry);
 
         let finished = false;
+
+        const cleanup = () => {
+            if (this._cancelEdit === cancel)
+                this._cancelEdit = null;
+        };
+
         const finish = save => {
             if (finished || version !== this._editVersion)
                 return;
             finished = true;
             this._editing = false;
+            cleanup();
 
             // A saved change rebuilds the list from the model, so this row and
             // everything in it is replaced; there is nothing left to restore.
@@ -418,18 +467,46 @@ export class TodoView {
                 entry.destroy();
             }
         };
+        const cancel = () => finish(false);
+        this._cancelEdit = cancel;
 
+        // Losing the entry (the menu closed, the page was rebuilt) ends the
+        // edit as well; without this _editing would stay set and the next
+        // click on edit would be ignored.
+        this._editEntry = entry;
+        entry.connect('destroy', () => {
+            if (this._editEntry !== entry)
+                return;
+            this._editEntry = null;
+            this._editing = false;
+            this._editVersion++;
+            cleanup();
+        });
+
+        // The date menu handles Escape itself (its capture handler runs before
+        // anything inside the field), so Escape closes the menu and the
+        // key-focus-out below discards the edit. Enter is handled by activate.
         entry.clutter_text.connect('activate', () => finish(true));
         entry.connect('key-press-event', (_actor, event) => {
             if (event.get_key_symbol() === Clutter.KEY_Escape) {
-                finish(false);
+                cancel();
                 return Clutter.EVENT_STOP;
             }
             return Clutter.EVENT_PROPAGATE;
         });
-        entry.connect('key-focus-out', () => finish(false));
+        // An St.Entry never keeps key focus itself: on key-focus-in it hands
+        // the focus to its inner ClutterText, which emits key-focus-out on the
+        // entry. That is not the user leaving the field, so only cancel when
+        // the focus really moved outside the entry.
+        entry.connect('key-focus-out', () => {
+            const focus = global.stage.get_key_focus();
+            if (focus && (focus === entry || entry.contains(focus)))
+                return;
+            cancel();
+        });
 
         entry.grab_key_focus();
-        entry.clutter_text.set_selection(0, task.text.length);
+        if (entry.get_parent() === row)
+            entry.clutter_text.set_selection(0, task.text.length);
     }
 }

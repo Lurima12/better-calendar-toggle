@@ -2,6 +2,17 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.45.0
+
+- Tasks: the edit button now works. The inline field keeps its focus while
+  typing (an `St.Entry` hands focus to its inner text, which the old code read
+  as "clicked away") and Enter saves the new text to the task
+- Tasks: the edit and pin buttons are hidden again until the pointer is over a
+  row, and only one field can be open at a time
+- Tasks: closing the menu, pressing Escape or clicking away while editing
+  discards the change and leaves no stuck state; the next edit works normally
+- No other page changed
+
 ## 0.44.0
 
 - Misc: removed the gear button from the Stopwatch and Timer cards; the cards

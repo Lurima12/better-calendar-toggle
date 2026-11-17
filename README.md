@@ -8,7 +8,7 @@ A GNOME Shell extension that overhauls the date menu into separate pages.
 - **Notifications**: the notification list, drawn by the extension so it fills the tab (GNOME's own list can be chosen instead)
 - **Media**: the cover on the left and the title, album, seek bar and controls on the right; Media player and Lyrics buttons below the player switch between the player and synced lyrics (lyrics hidden by default)
 - **Weather & Clocks**: detailed weather for the city chosen in GNOME Weather (left, click to open it); on the right the alarms card (one alarm at a time, with dots; shares its alarms with GNOME Clocks) always at the top, and the world clock card (cities saved in GNOME Clocks) always at the bottom; the cards keep their places and look the same when empty
-- **Misc**: Pomodoro, Stopwatch and Timer; a running or paused Timer is mirrored into GNOME Clocks as a stopped timer
+- **Misc**: Pomodoro, Stopwatch, Timer and Tasks; a running or paused Timer is mirrored into GNOME Clocks as a stopped timer. Task rows show their edit and pin buttons on hover: edit changes the text in place (Enter saves), pin moves the task to the top of the list
 
 A tab bar at the top switches pages. The menu opens on the Calendar page.
 
