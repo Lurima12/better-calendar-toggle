@@ -5,6 +5,8 @@ import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
+import {openClocks} from '../services/clocksLauncher.js';
+
 const DISPLAY_INTERVAL_MS = 100;
 
 const pad = value => String(value).padStart(2, '0');
@@ -179,6 +181,12 @@ export class MiscView {
         button.opacity = enabled ? 255 : 90;
     }
 
+    // Opens GNOME Clocks on the matching panel and closes the menu.
+    _openClocks(panel) {
+        openClocks(panel);
+        this._onActivate?.();
+    }
+
     _buildPomodoro() {
         const t = this._text;
         const card = this._makeCard(t.pomodoro);
@@ -217,7 +225,7 @@ export class MiscView {
 
     _buildStopwatch() {
         const t = this._text;
-        const card = this._makeCard(t.stopwatch, null);
+        const card = this._makeCard(t.stopwatch, () => this._openClocks('stopwatch'));
         this._stopwatch = card;
 
         this._stopwatchLaps = new St.Label({
@@ -245,7 +253,7 @@ export class MiscView {
 
     _buildTimer() {
         const t = this._text;
-        const card = this._makeCard(t.timer, null);
+        const card = this._makeCard(t.timer, () => this._openClocks('timer'));
         this._timer = card;
 
         for (const [label, minutes] of [[t.minusOne, -1], [t.plusOne, 1], [t.plusFive, 5]]) {
