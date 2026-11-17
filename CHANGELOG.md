@@ -2,6 +2,13 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.44.0
+
+- Misc: removed the gear button from the Stopwatch and Timer cards; the cards
+  no longer open GNOME Clocks, and their titles are now centred across the
+  full card width instead of leaving room for the button
+- No other page changed
+
 ## 0.43.0
 
 - Tasks: the edit button is always visible again, with the pin button to its

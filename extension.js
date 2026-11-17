@@ -847,8 +847,7 @@ class DateMenuOverhaul {
             minusOne: this._('−1 min'),
             plusOne: this._('+1 min'),
             plusFive: this._('+5 min'),
-            openClocks: this._('Open GNOME Clocks'),
-        }, this._todoView.actor, () => this._dateMenu?.menu.close());
+        }, this._todoView.actor);
 
         return {
             label: this._('Misc'),

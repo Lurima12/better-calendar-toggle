@@ -21,6 +21,7 @@
 - [x] 0.41.0 — task pin button; pinned task rows (click handling regressed here)
 - [x] 0.42.0 — repaired task clicks and in-place editing; restored the Clocks button
 - [x] 0.43.0 — always-visible pin/edit; pinned tasks on top; centred media placeholder; panel hover on weather
+- [x] 0.44.0 — removed the Stopwatch/Timer Clocks gear and the unused card header slot
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions

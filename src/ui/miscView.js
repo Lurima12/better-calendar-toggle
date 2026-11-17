@@ -5,8 +5,6 @@ import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
-import {openClocks} from '../services/clocksLauncher.js';
-
 const DISPLAY_INTERVAL_MS = 100;
 
 const pad = value => String(value).padStart(2, '0');
@@ -36,10 +34,9 @@ function formatStopwatch(ms) {
 // same rows (title, time, status line, extra row, controls) so they line up.
 export class MiscView {
     // todoActor is the task list, shown above the cards.
-    constructor(model, text, todoActor = null, onActivate = null) {
+    constructor(model, text, todoActor = null) {
         this._model = model;
         this._text = text;
-        this._onActivate = onActivate;
         this._tickId = 0;
         this._dots = [];
 
@@ -82,15 +79,13 @@ export class MiscView {
 
     // --------------------------------------------------------------- cards
 
-    _makeCard(title, onOpenClocks = null) {
+    _makeCard(title) {
         const card = new St.BoxLayout({
             style_class: 'bct-misc-card',
             vertical: true,
             x_expand: true,
             y_expand: true,
         });
-        // The title stays centered in the space left by the open button; the
-        // button slot is on every card so the three cards still line up.
         const header = new St.BoxLayout({
             style_class: 'bct-misc-header',
             x_expand: true,
@@ -103,22 +98,6 @@ export class MiscView {
         heading.clutter_text.set_line_alignment(Pango.Alignment.CENTER);
         header.add_child(heading);
 
-        const open = new St.Button({
-            style_class: 'bct-misc-open button',
-            can_focus: Boolean(onOpenClocks),
-            reactive: Boolean(onOpenClocks),
-            accessible_name: onOpenClocks ? this._text.openClocks : '',
-            y_align: Clutter.ActorAlign.CENTER,
-            child: new St.Icon({
-                icon_name: 'emblem-system-symbolic',
-                style_class: 'popup-menu-icon',
-            }),
-        });
-        if (onOpenClocks)
-            open.connect('clicked', onOpenClocks);
-        else
-            open.opacity = 0;
-        header.add_child(open);
         const displayRow = new St.BoxLayout({
             style_class: 'bct-misc-display-row',
             x_align: Clutter.ActorAlign.CENTER,
@@ -181,12 +160,6 @@ export class MiscView {
         button.opacity = enabled ? 255 : 90;
     }
 
-    // Opens GNOME Clocks on the matching panel and closes the menu.
-    _openClocks(panel) {
-        openClocks(panel);
-        this._onActivate?.();
-    }
-
     _buildPomodoro() {
         const t = this._text;
         const card = this._makeCard(t.pomodoro);
@@ -225,7 +198,7 @@ export class MiscView {
 
     _buildStopwatch() {
         const t = this._text;
-        const card = this._makeCard(t.stopwatch, () => this._openClocks('stopwatch'));
+        const card = this._makeCard(t.stopwatch);
         this._stopwatch = card;
 
         this._stopwatchLaps = new St.Label({
@@ -253,7 +226,7 @@ export class MiscView {
 
     _buildTimer() {
         const t = this._text;
-        const card = this._makeCard(t.timer, () => this._openClocks('timer'));
+        const card = this._makeCard(t.timer);
         this._timer = card;
 
         for (const [label, minutes] of [[t.minusOne, -1], [t.plusOne, 1], [t.plusFive, 5]]) {
