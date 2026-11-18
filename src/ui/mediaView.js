@@ -357,7 +357,8 @@ export class MediaView extends Signals.EventEmitter {
         this._nextButton = this._makeButton('bct-media-button button',
             'media-skip-forward-symbolic', text.nextTrack, () => this._player()?.next());
         // Only shown for players that expose the optional MPRIS Shuffle and
-        // LoopStatus properties. The dot under the icon marks an active toggle.
+        // LoopStatus properties. The checked background marks an active
+        // toggle; repeat also swaps to its one-track icon.
         const shuffle = this._makeToggleButton('bct-media-button bct-media-shuffle button',
             SHUFFLE_ICON, text.shuffle, () => {
                 const player = this._player();
@@ -371,11 +372,8 @@ export class MediaView extends Signals.EventEmitter {
                     player.setLoopStatus(nextLoopStatus(player.loopStatus));
             });
         this._shuffleButton = shuffle.button;
-        this._shuffleIcon = shuffle.icon;
-        this._shuffleDot = shuffle.dot;
         this._repeatButton = repeat.button;
         this._repeatIcon = repeat.icon;
-        this._repeatDot = repeat.dot;
         this._shuffleButton.visible = false;
         this._repeatButton.visible = false;
         controls.add_child(this._shuffleButton);
@@ -549,8 +547,8 @@ export class MediaView extends Signals.EventEmitter {
         return button;
     }
 
-    // A toggle button with a small dot under the icon, shown while the toggle
-    // is active. A single child icon would leave no room for the indicator.
+    // A toggle uses the same button layout as the playback controls, so its
+    // icon stays in the middle; the checked background marks the active state.
     _makeToggleButton(styleClass, iconName, accessibleName, onClicked) {
         const icon = new St.Icon({
             icon_name: iconName,
@@ -558,32 +556,16 @@ export class MediaView extends Signals.EventEmitter {
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        const dot = new St.Widget({
-            style_class: 'bct-media-toggle-dot',
-            x_align: Clutter.ActorAlign.CENTER,
-            margin_top: 1,
-            visible: false,
-        });
-        // A vertical box keeps the dot under the icon; a BinLayout would put
-        // both in the middle, where the dot is hidden by the icon.
-        const box = new St.BoxLayout({
-            vertical: true,
-            x_expand: true,
-            y_expand: true,
-        });
-        box.add_child(icon);
-        box.add_child(dot);
-
         const button = new St.Button({
             style_class: styleClass,
             can_focus: true,
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
             accessible_name: accessibleName,
-            child: box,
+            child: icon,
         });
         button.connect('clicked', onClicked);
-        return {button, icon, dot};
+        return {button, icon};
     }
 
     _setEnabled(button, enabled) {
@@ -819,11 +801,9 @@ export class MediaView extends Signals.EventEmitter {
         this._setEnabled(this._playPauseButton, player.canPlayPause);
         this._shuffleButton.visible = player.canShuffle;
         this._shuffleButton.checked = player.canShuffle && player.shuffle;
-        this._shuffleDot.visible = player.canShuffle && player.shuffle;
         this._setEnabled(this._shuffleButton, player.canShuffle);
         this._repeatButton.visible = player.canLoop;
         this._repeatButton.checked = player.canLoop && player.loopStatus !== 'None';
-        this._repeatDot.visible = player.canLoop && player.loopStatus !== 'None';
         this._repeatIcon.icon_name = player.loopStatus === 'Track'
             ? REPEAT_ONE_ICON
             : REPEAT_ICON;

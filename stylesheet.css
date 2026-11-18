@@ -448,18 +448,11 @@
     border-radius: 99px;
 }
 
-/* Shuffle and repeat are toggles: the accent colour fills the button and a
-   dot under the icon repeats the state. Repeat-one uses its own icon. */
+/* Shuffle and repeat are toggles: the accent colour fills the button while
+   active. Repeat-one uses its own icon. */
 .bct-media-shuffle:checked,
 .bct-media-repeat:checked {
     background-color: st-transparentize(-st-accent-color, 0.72);
-}
-
-.bct-media-toggle-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 99px;
-    background-color: -st-accent-fg-color;
 }
 
 /* Cover shape and playback button size come from settings. */

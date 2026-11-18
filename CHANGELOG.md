@@ -2,11 +2,17 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.51.0
+
+- Media: the shuffle and repeat icons sit in the middle of their buttons again.
+  The extra dot below the icon pushed them upwards; the active state is now the
+  accent-coloured fill alone, and repeat-one keeps its own icon
+
 ## 0.50.0
 
-- Media: the shuffle and repeat buttons show their active state with the accent
-  colour and a dot under the icon; repeat-one keeps its own icon, so the cycle
-  is readable at a glance
+- Media: the shuffle and repeat buttons show their active state with an
+  accent-coloured fill and a dot under the icon; repeat-one keeps its own icon,
+  so the cycle is readable at a glance
 - Media: the cover gesture now really opens the playing app. GNOME 50's Clutter
   does not report a click count, so double clicks are timed by the extension;
   gestures are handled on the cover itself and right and middle clicks act on
