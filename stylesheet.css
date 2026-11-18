@@ -448,10 +448,18 @@
     border-radius: 99px;
 }
 
-/* Shuffle and repeat are toggles: highlighted while active. */
+/* Shuffle and repeat are toggles: the accent colour fills the button and a
+   dot under the icon repeats the state. Repeat-one uses its own icon. */
 .bct-media-shuffle:checked,
 .bct-media-repeat:checked {
-    background-color: rgba(127, 127, 127, 0.32);
+    background-color: st-transparentize(-st-accent-color, 0.72);
+}
+
+.bct-media-toggle-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 99px;
+    background-color: -st-accent-fg-color;
 }
 
 /* Cover shape and playback button size come from settings. */
@@ -1164,15 +1172,18 @@
 .bct-dark .bct-tab:checked:hover,
 .bct-dark .bct-dnd-button:checked:hover,
 .bct-dark .bct-media-switcher-button:checked:hover,
-.bct-dark .bct-lyrics-tool:checked:hover,
+.bct-dark .bct-lyrics-tool:checked:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .bct-dark .bct-media-shuffle:checked:hover,
 .bct-dark .bct-media-repeat:checked:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: st-transparentize(-st-accent-color, 0.55);
 }
 
 .bct-dark .bct-media-shuffle:checked,
 .bct-dark .bct-media-repeat:checked {
-    background-color: rgba(255, 255, 255, 0.16);
+    background-color: st-transparentize(-st-accent-color, 0.65);
 }
 
 .bct-light .bct-tab:hover,
@@ -1183,19 +1194,25 @@
 .bct-light .bct-tab:checked,
 .bct-light .bct-dnd-button:checked,
 .bct-light .bct-media-switcher-button:checked,
-.bct-light .bct-media-shuffle:checked,
-.bct-light .bct-media-repeat:checked,
 .bct-light .bct-lyrics-tool:checked {
     background-color: rgba(0, 0, 0, 0.12);
+}
+
+.bct-light .bct-media-shuffle:checked,
+.bct-light .bct-media-repeat:checked {
+    background-color: st-transparentize(-st-accent-color, 0.75);
 }
 
 .bct-light .bct-tab:checked:hover,
 .bct-light .bct-dnd-button:checked:hover,
 .bct-light .bct-media-switcher-button:checked:hover,
-.bct-light .bct-media-shuffle:checked:hover,
-.bct-light .bct-media-repeat:checked:hover,
 .bct-light .bct-lyrics-tool:checked:hover {
     background-color: rgba(0, 0, 0, 0.09);
+}
+
+.bct-light .bct-media-shuffle:checked:hover,
+.bct-light .bct-media-repeat:checked:hover {
+    background-color: st-transparentize(-st-accent-color, 0.6);
 }
 
 .bct-dark .bct-misc-primary,

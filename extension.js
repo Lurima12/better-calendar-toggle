@@ -10,6 +10,7 @@ import St from 'gi://St';
 
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 
 import {fadeIn, setAnimationSettings} from './src/util/animation.js';
 import {AlarmModel} from './src/models/alarmModel.js';
@@ -55,6 +56,10 @@ class DateMenuOverhaul {
         this._lyrics = null;
         this._alarms = null;
         this._todos = null;
+
+        this._alarmNotification = null;
+        this._alarmSource = null;
+        this._alarmChangedId = 0;
 
         this._settingsSignals = [];
         this._rebuildId = 0;
@@ -130,6 +135,12 @@ class DateMenuOverhaul {
             sound: () => this._playAlarmSound(this._('Alarm')),
         });
         this._alarms.start();
+        // The notification goes away when the alarm is stopped or snoozed from
+        // the card as well as from its own buttons.
+        this._alarmChangedId = this._alarms.connect('changed', () => {
+            if (!this._alarms.ringing)
+                this._dismissAlarmNotification();
+        });
 
         this._todos = new TodoModel(this._settings);
         this._todos.start();
@@ -153,6 +164,11 @@ class DateMenuOverhaul {
 
         this._todos?.destroy();
         this._todos = null;
+        if (this._alarmChangedId) {
+            this._alarms?.disconnect(this._alarmChangedId);
+            this._alarmChangedId = 0;
+        }
+        this._dismissAlarmNotification();
         this._alarms?.destroy();
         this._alarms = null;
         this._misc?.destroy();
@@ -849,8 +865,55 @@ class DateMenuOverhaul {
     _handleAlarmRing(alarm) {
         if (!this._settings.get_boolean('misc-notifications'))
             return;
+
         const time = `${String(alarm.hour).padStart(2, '0')}:${String(alarm.minute).padStart(2, '0')}`;
-        Main.notify(this._('Alarm'), time);
+        this._showAlarmNotification(alarm, time);
+    }
+
+    // A resident notification with Stop and Snooze, so the alarm can be dealt
+    // with even when the menu is closed. CRITICAL keeps it on screen.
+    _showAlarmNotification(alarm, time) {
+        this._dismissAlarmNotification();
+
+        const source = new MessageTray.Source({
+            title: this._('Alarm'),
+            icon: new Gio.ThemedIcon({name: 'alarm-symbolic'}),
+        });
+        Main.messageTray.add(source);
+
+        const body = alarm.name ? `${time} — ${alarm.name}` : time;
+        const notification = new MessageTray.Notification({
+            source,
+            title: this._('Alarm'),
+            body,
+            resident: true,
+            urgency: MessageTray.Urgency.CRITICAL,
+        });
+        notification.addAction(this._('Snooze'), () => {
+            this._alarms?.snooze();
+            this._dismissAlarmNotification();
+        });
+        notification.addAction(this._('Stop'), () => {
+            this._alarms?.stopRinging();
+            this._dismissAlarmNotification();
+        });
+        notification.connect('destroy', () => {
+            if (this._alarmNotification === notification) {
+                this._alarmNotification = null;
+                this._alarmSource = null;
+            }
+        });
+
+        this._alarmSource = source;
+        this._alarmNotification = notification;
+        source.addNotification(notification);
+    }
+
+    _dismissAlarmNotification() {
+        const notification = this._alarmNotification;
+        this._alarmNotification = null;
+        this._alarmSource = null;
+        notification?.destroy();
     }
 
     _playAlarmSound(title) {

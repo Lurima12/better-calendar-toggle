@@ -2,6 +2,19 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.50.0
+
+- Media: the shuffle and repeat buttons show their active state with the accent
+  colour and a dot under the icon; repeat-one keeps its own icon, so the cycle
+  is readable at a glance
+- Media: the cover gesture now really opens the playing app. GNOME 50's Clutter
+  does not report a click count, so double clicks are timed by the extension;
+  gestures are handled on the cover itself and right and middle clicks act on
+  the press
+- Alarms: a ringing alarm shows a notification with **Snooze** and **Stop**
+  buttons. It stays until the alarm is dealt with, from the notification or the
+  alarm card, and goes away when the alarm stops
+
 ## 0.49.0
 
 - Media: players that expose the optional MPRIS `LoopStatus` property get a
