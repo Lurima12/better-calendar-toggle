@@ -26,6 +26,7 @@
 - [x] 0.46.0 — theme-adaptive cards/borders (dark/light sampling); hover for the Misc play buttons and notification items
 - [x] 0.47.0 — spacing between the DND and Clear buttons; DND limited to the bottom corners
 - [x] 0.48.0 — scroll bars above the content; instant title on player switch; shuffle button; artist line preference; shorter preference descriptions
+- [x] 0.49.0 — repeat button (off/all/one); configurable cover gesture to open or raise the playing app
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -45,6 +46,8 @@
 - **Overlay scroll bars paint below the scroll content:** `StScrollView` puts its `St.ScrollBar` children before the content child, so a card that fills the view covers the bar. `_makeScroll()` raises every `St.ScrollBar` with `set_child_above_sibling(bar, null)`.
 - **Do not build the marquee on `actor.ease()`:** an implicit transition cancelled from its own completion callback can leave the actor's easing state in "animate", and the next direct `translation_x` assignment then animates with the old duration and delay. `MarqueeLabel` uses explicit `Clutter.PropertyTransition`s and removes only its own `bct-marquee` transition before resetting the position.
 - **MPRIS shuffle is optional:** the `Shuffle` property is only present on players that support it. `MprisPlayer` reads the cached property to set `canShuffle`, and `setShuffle()` writes it through `org.freedesktop.DBus.Properties.Set`.
+- **MPRIS `LoopStatus` is optional too:** it is one of `None`, `Track` and `Playlist`. `MprisPlayer` sets `canLoop` from the cached property and `setLoopStatus()` writes it. The repeat button cycles `None` → `Playlist` → `Track` and swaps to the one-track icon for `Track`.
+- **Media cover gestures:** the gesture comes from `media-cover-action` (`single`, `double`, `right`, `middle`; default `double`). Read the click count on the *press* (`get_click_count()`) and store it, because the release event is not guaranteed to carry it. Right and middle clicks act on the press; touch taps always open, since touch has no buttons.
 
 ## Known Issues / Caveats
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.

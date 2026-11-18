@@ -184,6 +184,18 @@
       <description>Shows the artist below the title instead of the album. Falls back to the album when the player reports no artist.</description>
     </key>
 
+    <key name="media-cover-action" type="s">
+      <default>'double'</default>
+      <summary>Cover gesture</summary>
+      <description>The gesture on the media cover that opens the app playing the media, or brings it to the front.</description>
+      <choices>
+        <choice value="single"/>
+        <choice value="double"/>
+        <choice value="right"/>
+        <choice value="middle"/>
+      </choices>
+    </key>
+
     <!-- Media page: lyrics -->
     <key name="lyrics-visible" type="b">
       <default>false</default>

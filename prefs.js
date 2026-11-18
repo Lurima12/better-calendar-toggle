@@ -314,6 +314,9 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             _('Progress bar and times above the playback buttons.')));
         group.add(switchRow(settings, 'media-show-artist', _('Show artist'),
             _('Instead of the album.')));
+        group.add(comboRow(settings, 'media-cover-action', _('Cover gesture'),
+            ['single', 'double', 'right', 'middle'],
+            [_('Single click'), _('Double click'), _('Right click'), _('Middle click')]));
         return group;
     }
 

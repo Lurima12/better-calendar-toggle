@@ -5,8 +5,8 @@
   "shell-version": [
     "50"
   ],
-  "version": 48,
-  "version-name": "0.48.0",
+  "version": 49,
+  "version-name": "0.49.0",
   "gettext-domain": "better-calendar-toggle@lurim412",
   "settings-schema": "org.gnome.shell.extensions.better-calendar-toggle"
 }

@@ -576,6 +576,7 @@ class DateMenuOverhaul {
             playPause: this._('Play or pause'),
             nextTrack: this._('Next track'),
             shuffle: this._('Shuffle'),
+            repeat: this._('Repeat'),
             seek: this._('Seek'),
         }, this._settings, () => this._dateMenu?.menu.close());
         this._mediaViews.push(view);

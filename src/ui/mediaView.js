@@ -24,8 +24,14 @@ const MARQUEE_RESTART_DELAY_MS = 1200;
 const MARQUEE_MS_PER_PX = 20;
 const MARQUEE_RETURN_MS = 400;
 
-// St.Button icons for the optional shuffle control.
+// St.Button icons for the optional shuffle and repeat controls.
 const SHUFFLE_ICON = 'media-playlist-shuffle-symbolic';
+const REPEAT_ICON = 'media-playlist-repeat-symbolic';
+const REPEAT_ONE_ICON = 'media-playlist-repeat-song-symbolic';
+
+// Gestures that open the playing app from the cover; the default is safe from
+// accidental clicks.
+const COVER_ACTIONS = ['single', 'double', 'right', 'middle'];
 
 // Sizing, in text-size units (em). The cover sits on the left of the player
 // card and the details column (title, artist, seek bar, controls) fills the
@@ -52,6 +58,18 @@ function formatTime(us) {
     return hours > 0
         ? `${hours}:${String(minutes).padStart(2, '0')}:${seconds}`
         : `${minutes}:${seconds}`;
+}
+
+// Repeat cycles through off, all and one, like most players.
+function nextLoopStatus(status) {
+    switch (status) {
+    case 'None':
+        return 'Playlist';
+    case 'Playlist':
+        return 'Track';
+    default:
+        return 'None';
+    }
 }
 
 // A label that scrolls sideways when the text is wider than the space it has.
@@ -189,12 +207,12 @@ class MarqueeLabel {
 }
 
 // Compact media card: the cover is on the left, and the scrolling title, album
-// (or artist), seek bar and playback controls are on the right. Click the cover
-// to open the app that plays it; swipe or scroll the mouse wheel to change
-// player (it stops at the first and last player instead of looping). The player
-// dots live in the page above the card. Cover size, shape, button size and the
-// optional parts come from settings, and the player shrinks to fit the
-// container.
+// (or artist), seek bar and playback controls are on the right. A configurable
+// gesture on the cover (single, double, right or middle click) opens the app
+// that plays it; swipe or scroll the mouse wheel to change player (it stops at
+// the first and last player instead of looping). The player dots live in the
+// page above the card. Cover size, shape, button size and the optional parts
+// come from settings, and the player shrinks to fit the container.
 //
 // Emits 'player-changed' (player or null) when the shown player or its track
 // changes, so other parts (the lyrics) can follow it.
@@ -209,6 +227,7 @@ export class MediaView extends Signals.EventEmitter {
         this._scroller = new ScrollStepper(() => this._settings.get_int('scroll-distance'));
         this._pressX = null;
         this._pressedOnArt = false;
+        this._pressClickCount = 1;
         this._dragging = false;
         this._syncingSlider = false;
         this._progressId = 0;
@@ -330,18 +349,27 @@ export class MediaView extends Signals.EventEmitter {
             'media-playback-start-symbolic', text.playPause, () => this._player()?.playPause());
         this._nextButton = this._makeButton('bct-media-button button',
             'media-skip-forward-symbolic', text.nextTrack, () => this._player()?.next());
-        // Only shown for players that expose the optional MPRIS Shuffle property.
+        // Only shown for players that expose the optional MPRIS Shuffle and
+        // LoopStatus properties.
         this._shuffleButton = this._makeButton('bct-media-button bct-media-shuffle button',
             SHUFFLE_ICON, text.shuffle, () => {
                 const player = this._player();
                 if (player)
                     player.setShuffle(!player.shuffle);
             });
+        this._repeatButton = this._makeButton('bct-media-button bct-media-repeat button',
+            REPEAT_ICON, text.repeat, () => {
+                const player = this._player();
+                if (player)
+                    player.setLoopStatus(nextLoopStatus(player.loopStatus));
+            });
         this._shuffleButton.visible = false;
+        this._repeatButton.visible = false;
         controls.add_child(this._shuffleButton);
         controls.add_child(this._previousButton);
         controls.add_child(this._playPauseButton);
         controls.add_child(this._nextButton);
+        controls.add_child(this._repeatButton);
 
         // Cover on the left; title, artist, seek bar and controls on the right.
         controls.x_expand = true;
@@ -559,6 +587,27 @@ export class MediaView extends Signals.EventEmitter {
 
     // -------------------------------------------------------- interaction
 
+    _coverAction() {
+        const action = this._settings.get_string('media-cover-action');
+        return COVER_ACTIONS.includes(action) ? action : 'double';
+    }
+
+    _isOnCover(event) {
+        return Boolean(event.get_source()) && this._frame.contains(event.get_source());
+    }
+
+    // Primary-click gestures. Right and middle clicks are handled on press.
+    _clickOpensCover(clickCount) {
+        switch (this._coverAction()) {
+        case 'single':
+            return true;
+        case 'double':
+            return clickCount >= 2;
+        default:
+            return false;
+        }
+    }
+
     _onScroll(event) {
         if (this._client.players.length < 2)
             return Clutter.EVENT_PROPAGATE;
@@ -572,18 +621,33 @@ export class MediaView extends Signals.EventEmitter {
         return Clutter.EVENT_STOP;
     }
 
-    // Swipe left/right anywhere on the card; a click on the cover opens the
-    // player's app. Buttons and the seek bar handle their own presses first.
+    // Swipe left/right anywhere on the card; the configured gesture on the
+    // cover opens the player's app. Buttons and the seek bar handle their own
+    // presses first.
     _onEvent(event) {
         switch (event.type()) {
-        case Clutter.EventType.BUTTON_PRESS:
-            if (event.get_button() !== Clutter.BUTTON_PRIMARY)
+        case Clutter.EventType.BUTTON_PRESS: {
+            const button = event.get_button();
+            const onArt = this._isOnCover(event);
+            const action = this._coverAction();
+            if (onArt &&
+                ((button === Clutter.BUTTON_SECONDARY && action === 'right') ||
+                 (button === Clutter.BUTTON_MIDDLE && action === 'middle'))) {
+                // These buttons have no drag to distinguish them from, so act
+                // on the press.
+                this._openPlayer();
+                return Clutter.EVENT_STOP;
+            }
+            if (button !== Clutter.BUTTON_PRIMARY)
                 break;
-            // fall through
+            [this._pressX] = event.get_coords();
+            this._pressedOnArt = onArt;
+            this._pressClickCount = event.get_click_count?.() || 1;
+            break;
+        }
         case Clutter.EventType.TOUCH_BEGIN:
             [this._pressX] = event.get_coords();
-            this._pressedOnArt = Boolean(event.get_source()) &&
-                this._frame.contains(event.get_source());
+            this._pressedOnArt = this._isOnCover(event);
             break;
         case Clutter.EventType.BUTTON_RELEASE:
         case Clutter.EventType.TOUCH_END: {
@@ -592,12 +656,16 @@ export class MediaView extends Signals.EventEmitter {
             const [x] = event.get_coords();
             const distance = (x - this._pressX) / this._scale();
             const wasOnArt = this._pressedOnArt;
+            const clickCount = this._pressClickCount;
+            const touch = event.type() === Clutter.EventType.TOUCH_END;
             this._pressX = null;
+            this._pressedOnArt = false;
 
             if (Math.abs(distance) >= SWIPE_DISTANCE) {
                 this._move(distance < 0 ? 1 : -1);
-            } else if (Math.abs(distance) <= CLICK_TOLERANCE) {
-                if (wasOnArt)
+            } else if (Math.abs(distance) <= CLICK_TOLERANCE && wasOnArt) {
+                // Touch has no buttons, so a tap is always the cover gesture.
+                if (touch || this._clickOpensCover(clickCount))
                     this._openPlayer();
             }
             break;
@@ -605,6 +673,7 @@ export class MediaView extends Signals.EventEmitter {
         case Clutter.EventType.TOUCH_CANCEL:
         case Clutter.EventType.LEAVE:
             this._pressX = null;
+            this._pressedOnArt = false;
             break;
         default:
             break;
@@ -651,6 +720,12 @@ export class MediaView extends Signals.EventEmitter {
         this._shuffleButton.visible = player.canShuffle;
         this._shuffleButton.checked = player.canShuffle && player.shuffle;
         this._setEnabled(this._shuffleButton, player.canShuffle);
+        this._repeatButton.visible = player.canLoop;
+        this._repeatButton.checked = player.canLoop && player.loopStatus !== 'None';
+        this._repeatButton.child.icon_name = player.loopStatus === 'Track'
+            ? REPEAT_ONE_ICON
+            : REPEAT_ICON;
+        this._setEnabled(this._repeatButton, player.canLoop);
 
         this._seekBox.visible = player.lengthUs > 0 &&
             this._settings.get_boolean('media-show-seekbar');

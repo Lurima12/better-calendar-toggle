@@ -14,6 +14,8 @@ const OBJECT_PATH = '/org/mpris/MediaPlayer2';
 const PLAYER_IFACE = 'org.mpris.MediaPlayer2.Player';
 const ROOT_IFACE = 'org.mpris.MediaPlayer2';
 
+const LOOP_STATUSES = ['None', 'Track', 'Playlist'];
+
 // One media player on the session bus.
 class MprisPlayer {
     constructor(busName, onChanged) {
@@ -39,6 +41,8 @@ class MprisPlayer {
         this.canSeek = false;
         this.canShuffle = false;
         this.shuffle = false;
+        this.canLoop = false;
+        this.loopStatus = 'None';
         this.lengthUs = 0;
         this.trackId = '';
         this.url = '';
@@ -207,9 +211,23 @@ class MprisPlayer {
 
         this.shuffle = enabled;
         this._notify();
+        this._setProperty('Shuffle', new GLib.Variant('b', enabled));
+    }
+
+    // LoopStatus is optional too, and is one of None, Track or Playlist.
+    setLoopStatus(status) {
+        if (!this.canLoop || !LOOP_STATUSES.includes(status) || status === this.loopStatus)
+            return;
+
+        this.loopStatus = status;
+        this._notify();
+        this._setProperty('LoopStatus', new GLib.Variant('s', status));
+    }
+
+    _setProperty(name, value) {
         Gio.DBus.session.call(
             this.busName, OBJECT_PATH, 'org.freedesktop.DBus.Properties', 'Set',
-            new GLib.Variant('(ssv)', [PLAYER_IFACE, 'Shuffle', new GLib.Variant('b', enabled)]),
+            new GLib.Variant('(ssv)', [PLAYER_IFACE, name, value]),
             null, Gio.DBusCallFlags.NONE, -1, this._cancellable,
             (connection, result) => {
                 try {
@@ -338,6 +356,10 @@ class MprisPlayer {
         const shuffle = this._proxy?.get_cached_property('Shuffle');
         this.canShuffle = Boolean(shuffle);
         this.shuffle = shuffle?.unpack() ?? false;
+        const loop = this._proxy?.get_cached_property('LoopStatus');
+        this.canLoop = Boolean(loop);
+        const loopStatus = loop?.unpack();
+        this.loopStatus = LOOP_STATUSES.includes(loopStatus) ? loopStatus : 'None';
         this.rate = Number(this._property('Rate') ?? 1) || 1;
         this.lengthUs = Number(metadata['mpris:length'] ?? 0) || 0;
         this.trackId = String(metadata['mpris:trackid'] ?? '');

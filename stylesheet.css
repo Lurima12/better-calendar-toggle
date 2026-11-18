@@ -448,8 +448,9 @@
     border-radius: 99px;
 }
 
-/* Shuffle is a toggle: highlighted while the player shuffles. */
-.bct-media-shuffle:checked {
+/* Shuffle and repeat are toggles: highlighted while active. */
+.bct-media-shuffle:checked,
+.bct-media-repeat:checked {
     background-color: rgba(127, 127, 127, 0.32);
 }
 
@@ -1164,11 +1165,13 @@
 .bct-dark .bct-dnd-button:checked:hover,
 .bct-dark .bct-media-switcher-button:checked:hover,
 .bct-dark .bct-lyrics-tool:checked:hover,
-.bct-dark .bct-media-shuffle:checked:hover {
+.bct-dark .bct-media-shuffle:checked:hover,
+.bct-dark .bct-media-repeat:checked:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.bct-dark .bct-media-shuffle:checked {
+.bct-dark .bct-media-shuffle:checked,
+.bct-dark .bct-media-repeat:checked {
     background-color: rgba(255, 255, 255, 0.16);
 }
 
@@ -1181,6 +1184,7 @@
 .bct-light .bct-dnd-button:checked,
 .bct-light .bct-media-switcher-button:checked,
 .bct-light .bct-media-shuffle:checked,
+.bct-light .bct-media-repeat:checked,
 .bct-light .bct-lyrics-tool:checked {
     background-color: rgba(0, 0, 0, 0.12);
 }
@@ -1189,6 +1193,7 @@
 .bct-light .bct-dnd-button:checked:hover,
 .bct-light .bct-media-switcher-button:checked:hover,
 .bct-light .bct-media-shuffle:checked:hover,
+.bct-light .bct-media-repeat:checked:hover,
 .bct-light .bct-lyrics-tool:checked:hover {
     background-color: rgba(0, 0, 0, 0.09);
 }

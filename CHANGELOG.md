@@ -2,6 +2,17 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.49.0
+
+- Media: players that expose the optional MPRIS `LoopStatus` property get a
+  repeat button. It cycles off, repeat all and repeat one, uses a one-track icon
+  while repeating a single track, and is hidden for players that do not support
+  it
+- Media: the cover gesture that opens the playing app is now a preference:
+  single click, double click, right click or middle click. The default is a
+  double click, so a single click no longer opens the app by accident; the
+  action starts the app or brings its window to the front
+
 ## 0.48.0
 
 - Media: the title appears immediately when switching players. The marquee now
