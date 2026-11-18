@@ -188,9 +188,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildSizeGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Size'),
-            description: _('Width and height are independent. Automatic fits the content to the screen; ' +
-                'Fixed sets a size in pixels, in steps of 50. A fixed size is limited to the available ' +
-                'screen area, and content that does not fit scrolls.'),
+            description: _('Automatic fits the content. Fixed sets a pixel size in steps of 50, ' +
+                'limited to the screen. Content that does not fit scrolls.'),
         });
 
         // Automatic is a size of 0; Fixed uses the value below it.
@@ -249,7 +248,7 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             ['top', 'bottom'], [_('Above the calendar'), _('Below the calendar')]));
 
         group.add(switchRow(settings, 'show-scrollbar', _('Show scroll bars'),
-            _('When off, pages still scroll but no scroll bar is drawn.')));
+            _('Off: pages still scroll, without a bar.')));
 
         return group;
     }
@@ -267,8 +266,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             [_('Automatic'), _('Always show'), _('Icons only')]));
 
         group.add(switchRow(settings, 'animations', _('Animations'),
-            _('Small fades and slides when you change page, player or alarm, and when notifications ' +
-                'arrive or are dismissed. They are also off when GNOME animations are off.')));
+            _('Fades and slides when changing page, player or alarm. ' +
+                'Also off when GNOME animations are off.')));
 
         return group;
     }
@@ -278,10 +277,10 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
 
         group.add(comboRow(settings, 'notification-list', _('Notification list'),
             ['custom', 'stock'],
-            [_('Drawn by this extension (fills the tab)'), _('The list of GNOME Shell')]));
+            [_('Custom (fills the tab)'), _('GNOME Shell')]));
 
         group.add(switchRow(settings, 'notifications-scrollbar', _('Show scroll bar'),
-            _('When off, the list still scrolls but no scroll bar is drawn.')));
+            _('Off: the list still scrolls, without a bar.')));
 
         const dndRow = switchRow(settings, 'show-dnd-switch', _('Do Not Disturb button'),
             _('A compact button on the Notifications page.'));
@@ -302,8 +301,7 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildMediaGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Media player'),
-            description: _('Shown on the Media page. The player shrinks automatically ' +
-                'to fit the container, so a large cover is only used when there is room.'),
+            description: _('Shrinks to fit the Media page, so a large cover is used only when there is room.'),
         });
 
         group.add(spinRow(settings, 'media-cover-size', _('Cover size'),
@@ -314,33 +312,30 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             ['small', 'medium', 'large'], [_('Small'), _('Medium'), _('Large')]));
         group.add(switchRow(settings, 'media-show-seekbar', _('Seek bar'),
             _('Progress bar and times above the playback buttons.')));
+        group.add(switchRow(settings, 'media-show-artist', _('Show artist'),
+            _('Instead of the album.')));
         return group;
     }
 
     _buildLyricsGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Lyrics'),
-            description: _('Time-synced lyrics for the current track, on the right of the Media page. ' +
-                'Use the Lyrics button on the Media page to show or hide them; nothing is looked up ' +
-                'while they are hidden. Nothing is stored, and only synced lyrics are shown. When a ' +
-                'provider has a romanization or a translation, buttons at the bottom right of the ' +
-                'lyrics area show them under the current line. The lyrics area has a fixed size, ' +
-                'so long lyrics never change the size of the menu.'),
+            description: _('Synced lyrics beside the player. Lyrics that are hidden are not looked up, ' +
+                'and nothing is stored.'),
         });
 
         const providerRow = comboRow(settings, 'lyrics-provider', _('Provider'),
             ['auto', 'lrclib', 'netease', 'betterlyrics', 'local'],
             [_('Automatic (local file, LRCLIB, NetEase, BetterLyrics)'), _('LRCLIB only'),
                 _('NetEase only'), _('BetterLyrics only'), _('Local .lrc files only (offline)')]);
-        providerRow.subtitle = _('Automatic asks a provider only when the ones before it found nothing ' +
-            'or could not be reached. Online providers receive the track name, artist, album and length. ' +
-            'NetEase and BetterLyrics are unofficial services and may change or stop working.');
+        providerRow.subtitle = _('Automatic tries each in turn. Online providers receive the track ' +
+            'name, artist, album and length. NetEase and BetterLyrics are unofficial.');
         const linesRow = spinRow(settings, 'lyrics-lines', _('Lines'), _('Lines shown, 3 to 9'), 3, 9);
 
         const currentSize = spinRow(settings, 'lyrics-current-size', _('Highlighted line size'),
-            _('Percent of the normal text size'), 100, 250, 5);
+            _('Percent of normal size'), 100, 250, 5);
         const otherSize = spinRow(settings, 'lyrics-other-size', _('Other lines size'),
-            _('Percent of the normal text size'), 70, 150, 5);
+            _('Percent of normal size'), 70, 150, 5);
         const otherOpacity = spinRow(settings, 'lyrics-other-opacity', _('Other lines opacity'),
             _('Percent, lower is dimmer'), 20, 100, 5);
 
@@ -353,8 +348,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildAlarmGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Alarms'),
-            description: _('Alarms are added and changed in the Alarms card on the Weather and Clocks page. ' +
-                'They use the notification and sound settings of the Pomodoro and timer above.'),
+            description: _('Set them up in the Alarms card. They use the notification and sound ' +
+                'settings of the Pomodoro and timer above.'),
         });
 
         group.add(comboRow(settings, 'alarm-storage', _('Where alarms are kept'),
@@ -362,8 +357,7 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
             [_('GNOME Clocks when installed (automatic)'), _('Only in this extension'),
                 _('GNOME Clocks')]));
         group.add(switchRow(settings, 'alarm-ring-clocks', _('Ring GNOME Clocks alarms from here'),
-            _('GNOME Clocks rings its own alarms. Turn this on only if it does not ring when closed, ' +
-                'otherwise an alarm rings twice.')));
+            _('Only if GNOME Clocks does not ring when closed, or alarms ring twice.')));
         group.add(spinRow(settings, 'alarm-snooze', _('Snooze length'), _('Minutes'), 1, 30));
         return group;
     }
@@ -371,8 +365,7 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildScrollGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Scrolling'),
-            description: _('How the media player and the alarms react to a touchpad scroll. ' +
-                'One scroll gesture moves one page.'),
+            description: _('One scroll gesture moves one page in the media player and the alarms.'),
         });
         group.add(spinRow(settings, 'scroll-distance', _('Touchpad distance per page'),
             _('Larger is slower'), 2, 50));
@@ -389,7 +382,7 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
         group.add(spinRow(settings, 'pomodoro-short', _('Short break'), _('Minutes'), 1, 60));
         group.add(spinRow(settings, 'pomodoro-long', _('Long break'), _('Minutes'), 1, 120));
         group.add(spinRow(settings, 'pomodoro-sessions', _('Sessions before the long break'),
-            _('Focus sessions in a cycle; the long break comes at the end'), 2, 10));
+            _('The long break comes after this many sessions'), 2, 10));
         group.add(switchRow(settings, 'misc-notifications', _('Notify when something ends'),
             _('A Pomodoro phase or the timer finished.')));
         group.add(switchRow(settings, 'misc-sound', _('Play a sound when something ends')));
@@ -399,10 +392,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildClockGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Panel clock'),
-            description: _('Change how the date and time look on the top bar. ' +
-                'Codes: %a weekday, %A full weekday, %-d day, %b month, %B full month, ' +
-                '%Y year, %H hour (24 h), %I hour (12 h), %M minute, %S seconds, %p AM/PM. ' +
-                'Example: %a %-d %b  %H:%M'),
+            description: _('Codes: %a/%A weekday, %-d day, %b/%B month, %Y year, %H hour (24 h), ' +
+                '%I hour (12 h), %M minute, %S seconds, %p AM/PM. Example: %a %-d %b  %H:%M'),
         });
 
         const enableRow = switchRow(settings, 'use-custom-clock-format', _('Use a custom format'));
@@ -439,8 +430,8 @@ export default class BetterCalendarTogglePreferences extends ExtensionPreference
     _buildWeatherGroup(settings) {
         const group = new Adw.PreferencesGroup({
             title: _('Weather indicator'),
-            description: _('Shows the weather icon and temperature inside the panel clock. ' +
-                'It uses the location and weather settings of GNOME and is hidden when they are not set up.'),
+            description: _('Uses the location and weather settings of GNOME. Hidden when they are ' +
+                'not set up.'),
         });
 
         const showRow = switchRow(settings, 'show-weather-indicator', _('Show in the panel clock'));

@@ -2,6 +2,21 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.48.0
+
+- Media: the title appears immediately when switching players. The marquee now
+  uses explicit transitions instead of the shell's implicit easing, which could
+  stay in the "animate" state after a cancelled scroll and keep the new title
+  off screen for seconds; it also starts after 0.4 s instead of 1.5 s
+- Media: players that expose the optional MPRIS `Shuffle` property get a shuffle
+  button; it is highlighted while shuffle is on, and hidden for players that do
+  not support it
+- Media: a "Show artist" preference puts the artist below the title instead of
+  the album, falling back to whichever one the player reports
+- Calendar, notifications and the other scrolling pages: the scroll bar is drawn
+  above the content, so the events card no longer covers it
+- Preferences: descriptions are shorter and to the point
+
 ## 0.47.0
 
 - Notifications: the Do Not Disturb button no longer touches the Clear button;

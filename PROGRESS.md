@@ -25,6 +25,7 @@
 - [x] 0.45.0 — task editing fixed (entry keeps focus); hover-only edit/pin; edit state resets on menu close
 - [x] 0.46.0 — theme-adaptive cards/borders (dark/light sampling); hover for the Misc play buttons and notification items
 - [x] 0.47.0 — spacing between the DND and Clear buttons; DND limited to the bottom corners
+- [x] 0.48.0 — scroll bars above the content; instant title on player switch; shuffle button; artist line preference; shorter preference descriptions
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -41,6 +42,9 @@
 - **Extension CSS wins over theme `:hover`:** once the extension stylesheet sets a background for a button, the shell theme's own `:hover`/`:active` rule for that class no longer shows. Every interactive background (tabs, play buttons, notification cards, alarm days, task rows) must therefore declare its hover/active/checked states explicitly, for both `bct-dark` and `bct-light`.
 - **Card borders mirror the shell:** `1px` border with the same tint family as the fill (white over dark, black over light), matching the stock `popup-menu-content` and `.message` border relationship.
 - **DND position:** `dnd-position` only accepts `bottom-left` and `bottom-right` since 0.47.0. Both layouts ignore the vertical part and always use the bottom row; GSettings itself falls back to the default `bottom-left` when an old `top-*` value is loaded from the keyfile/dconf.
+- **Overlay scroll bars paint below the scroll content:** `StScrollView` puts its `St.ScrollBar` children before the content child, so a card that fills the view covers the bar. `_makeScroll()` raises every `St.ScrollBar` with `set_child_above_sibling(bar, null)`.
+- **Do not build the marquee on `actor.ease()`:** an implicit transition cancelled from its own completion callback can leave the actor's easing state in "animate", and the next direct `translation_x` assignment then animates with the old duration and delay. `MarqueeLabel` uses explicit `Clutter.PropertyTransition`s and removes only its own `bct-marquee` transition before resetting the position.
+- **MPRIS shuffle is optional:** the `Shuffle` property is only present on players that support it. `MprisPlayer` reads the cached property to set `canShuffle`, and `setShuffle()` writes it through `org.freedesktop.DBus.Properties.Set`.
 
 ## Known Issues / Caveats
 - The running GNOME Shell caches extension code and metadata; log out and back in (Wayland) to load a new build.

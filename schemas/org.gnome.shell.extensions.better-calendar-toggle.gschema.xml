@@ -178,7 +178,11 @@
       <description>Shows the progress bar and times above the playback buttons.</description>
     </key>
 
-
+    <key name="media-show-artist" type="b">
+      <default>true</default>
+      <summary>Show the artist</summary>
+      <description>Shows the artist below the title instead of the album. Falls back to the album when the player reports no artist.</description>
+    </key>
 
     <!-- Media page: lyrics -->
     <key name="lyrics-visible" type="b">

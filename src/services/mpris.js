@@ -37,6 +37,8 @@ class MprisPlayer {
         this.canNext = false;
         this.canPlayPause = false;
         this.canSeek = false;
+        this.canShuffle = false;
+        this.shuffle = false;
         this.lengthUs = 0;
         this.trackId = '';
         this.url = '';
@@ -197,6 +199,27 @@ class MprisPlayer {
         this._call('Previous');
     }
 
+    // Shuffle is optional in MPRIS: its property is only present when the
+    // player supports it. Set it through the standard Properties interface.
+    setShuffle(enabled) {
+        if (!this.canShuffle || enabled === this.shuffle)
+            return;
+
+        this.shuffle = enabled;
+        this._notify();
+        Gio.DBus.session.call(
+            this.busName, OBJECT_PATH, 'org.freedesktop.DBus.Properties', 'Set',
+            new GLib.Variant('(ssv)', [PLAYER_IFACE, 'Shuffle', new GLib.Variant('b', enabled)]),
+            null, Gio.DBusCallFlags.NONE, -1, this._cancellable,
+            (connection, result) => {
+                try {
+                    connection.call_finish(result);
+                } catch (e) {
+                    // The player went away or does not accept the change.
+                }
+            });
+    }
+
     // Current position in microseconds, extrapolated while playing.
     positionUs() {
         let position = this._positionUs;
@@ -312,6 +335,9 @@ class MprisPlayer {
         this.canPlayPause = (this._property('CanPlay') ?? false) ||
             (this._property('CanPause') ?? false);
         this.canSeek = this._property('CanSeek') ?? false;
+        const shuffle = this._proxy?.get_cached_property('Shuffle');
+        this.canShuffle = Boolean(shuffle);
+        this.shuffle = shuffle?.unpack() ?? false;
         this.rate = Number(this._property('Rate') ?? 1) || 1;
         this.lengthUs = Number(metadata['mpris:length'] ?? 0) || 0;
         this.trackId = String(metadata['mpris:trackid'] ?? '');

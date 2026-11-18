@@ -575,6 +575,7 @@ class DateMenuOverhaul {
             previousTrack: this._('Previous track'),
             playPause: this._('Play or pause'),
             nextTrack: this._('Next track'),
+            shuffle: this._('Shuffle'),
             seek: this._('Seek'),
         }, this._settings, () => this._dateMenu?.menu.close());
         this._mediaViews.push(view);
@@ -1198,6 +1199,13 @@ class DateMenuOverhaul {
             y_expand: true,
         });
         scroll.add_child(child);
+        // StScrollView paints its overlay scroll bars below the child, so a
+        // child that fills the view (the events card) covers the bar. Raise the
+        // bars above the content so they stay visible and draggable.
+        for (const bar of scroll.get_children()) {
+            if (bar instanceof St.ScrollBar)
+                scroll.set_child_above_sibling(bar, null);
+        }
         this._scrolls.push(scroll);
         return scroll;
     }

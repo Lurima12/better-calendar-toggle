@@ -19,8 +19,13 @@ const CLICK_TOLERANCE = 8;
 const PROGRESS_INTERVAL_MS = 250;
 const POSITION_SYNC_TICKS = 8;
 
-const MARQUEE_PAUSE_MS = 1500;
-const MARQUEE_MS_PER_PX = 30;
+const MARQUEE_START_DELAY_MS = 400;
+const MARQUEE_RESTART_DELAY_MS = 1200;
+const MARQUEE_MS_PER_PX = 20;
+const MARQUEE_RETURN_MS = 400;
+
+// St.Button icons for the optional shuffle control.
+const SHUFFLE_ICON = 'media-playlist-shuffle-symbolic';
 
 // Sizing, in text-size units (em). The cover sits on the left of the player
 // card and the details column (title, artist, seek bar, controls) fills the
@@ -36,7 +41,7 @@ const SHAPES = ['rounded', 'square', 'circle'];
 const BUTTON_SIZES = ['small', 'medium', 'large'];
 const OPTION_KEYS = [
     'media-cover-size', 'media-cover-shape', 'media-button-size',
-    'media-show-seekbar',
+    'media-show-seekbar', 'media-show-artist',
 ];
 
 function formatTime(us) {
@@ -55,6 +60,7 @@ function formatTime(us) {
 class MarqueeLabel {
     constructor(styleClass) {
         this._token = 0;
+        this._scrollTransition = null;
         this._lastWidth = -1;
         this._lastHeight = -1;
         this._lastText = null;
@@ -95,7 +101,8 @@ class MarqueeLabel {
 
     _stop() {
         this._token++;
-        this._label.remove_all_transitions();
+        this._scrollTransition = null;
+        this._label.remove_transition('bct-marquee');
         this._label.translation_x = 0;
     }
 
@@ -135,25 +142,49 @@ class MarqueeLabel {
             if (token !== this._token)
                 return;
             this._label.translation_x = 0;
-            this._label.ease({
-                translation_x: -distance,
-                duration: Math.round(distance * MARQUEE_MS_PER_PX) + 400,
-                delay: MARQUEE_PAUSE_MS,
-                mode: Clutter.AnimationMode.LINEAR,
-                onComplete: () => {
+            this._animate(-distance,
+                Math.round(distance * MARQUEE_MS_PER_PX) + 400,
+                MARQUEE_START_DELAY_MS, Clutter.AnimationMode.LINEAR,
+                () => {
                     if (token !== this._token)
                         return;
-                    this._label.ease({
-                        translation_x: 0,
-                        duration: 500,
-                        delay: MARQUEE_PAUSE_MS,
-                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                        onComplete: run,
-                    });
-                },
-            });
+                    this._animate(0, MARQUEE_RETURN_MS, MARQUEE_RESTART_DELAY_MS,
+                        Clutter.AnimationMode.EASE_OUT_QUAD, run);
+                });
         };
         run();
+    }
+
+    // Moves the label with an explicit transition. St's ease() uses the
+    // actor's implicit easing state, which is left in the "animate" state when
+    // a transition is cancelled from its own completion callback; a later
+    // direct move then animates with the old duration and delay, so the title
+    // can stay off screen for seconds after a track change.
+    _animate(to, duration, delay, mode, onComplete) {
+        const slow = St.Settings.get().slow_down_factor || 1;
+        const transition = new Clutter.PropertyTransition({
+            property_name: 'translation-x',
+            duration: Math.round(duration * slow),
+            delay: Math.round(delay * slow),
+            progress_mode: mode,
+        });
+        transition.set_from(this._label.translation_x);
+        transition.set_to(to);
+
+        const id = transition.connect('stopped', (_transition, finished) => {
+            transition.disconnect(id);
+            // A new transition may have replaced this one in the meantime.
+            if (this._scrollTransition !== transition)
+                return;
+            this._scrollTransition = null;
+            this._label.remove_transition('bct-marquee');
+            if (finished)
+                onComplete?.();
+        });
+
+        this._scrollTransition = transition;
+        this._label.remove_transition('bct-marquee');
+        this._label.add_transition('bct-marquee', transition);
     }
 }
 
@@ -299,6 +330,15 @@ export class MediaView extends Signals.EventEmitter {
             'media-playback-start-symbolic', text.playPause, () => this._player()?.playPause());
         this._nextButton = this._makeButton('bct-media-button button',
             'media-skip-forward-symbolic', text.nextTrack, () => this._player()?.next());
+        // Only shown for players that expose the optional MPRIS Shuffle property.
+        this._shuffleButton = this._makeButton('bct-media-button bct-media-shuffle button',
+            SHUFFLE_ICON, text.shuffle, () => {
+                const player = this._player();
+                if (player)
+                    player.setShuffle(!player.shuffle);
+            });
+        this._shuffleButton.visible = false;
+        controls.add_child(this._shuffleButton);
         controls.add_child(this._previousButton);
         controls.add_child(this._playPauseButton);
         controls.add_child(this._nextButton);
@@ -597,7 +637,8 @@ export class MediaView extends Signals.EventEmitter {
         this._renderCover(player);
 
         this._title.text = player.title || player.identity;
-        const subtitle = player.album || player.artist;
+        const showArtist = this._settings.get_boolean('media-show-artist');
+        const subtitle = (showArtist ? player.artist : '') || player.album || player.artist;
         this._subtitle.text = subtitle;
         this._subtitle.visible = subtitle !== '';
 
@@ -607,6 +648,9 @@ export class MediaView extends Signals.EventEmitter {
         this._setEnabled(this._previousButton, player.canPrevious);
         this._setEnabled(this._nextButton, player.canNext);
         this._setEnabled(this._playPauseButton, player.canPlayPause);
+        this._shuffleButton.visible = player.canShuffle;
+        this._shuffleButton.checked = player.canShuffle && player.shuffle;
+        this._setEnabled(this._shuffleButton, player.canShuffle);
 
         this._seekBox.visible = player.lengthUs > 0 &&
             this._settings.get_boolean('media-show-seekbar');
