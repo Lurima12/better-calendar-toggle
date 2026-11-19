@@ -5,12 +5,8 @@ menu into a set of clean, tabbed pages: calendar and events, notifications, a
 music player with synced lyrics, weather and world clocks, and a productivity
 page with Pomodoro, stopwatch, timer and tasks.
 
-Built for GNOME Shell 50 on Wayland, and tuned for small laptop screens
-(1366×768) and large text.
+<img width="400" height="260" alt="Showcase" src="https://github.com/user-attachments/assets/39a34e7d-e9ae-4072-a0de-9cb958f8c71a" />
 
-- **Download:** [latest release](https://github.com/Lurima12/better-calendar-toggle/releases/latest)
-- **Requires:** GNOME Shell 50
-- **License:** GPL-2.0-or-later
 
 ## Why you might like it
 
