@@ -5,8 +5,9 @@ menu into a set of clean, tabbed pages: calendar and events, notifications, a
 music player with synced lyrics, weather and world clocks, and a productivity
 page with Pomodoro, stopwatch, timer and tasks.
 
+<p align="center">
 <img width="400" height="260" alt="Showcase" src="https://github.com/user-attachments/assets/39a34e7d-e9ae-4072-a0de-9cb958f8c71a" />
-
+</p>
 
 ## Why you might like it
 
