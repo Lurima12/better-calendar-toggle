@@ -23,7 +23,7 @@ const TIMESTAMP = /\[(\d{1,3}):(\d{1,2}(?:[.:]\d{1,3})?)\]/g;
 
 // Parses time-synced text in the LRC format: lines that start with one or more
 // [mm:ss.xx] stamps. Returns [{time (ms), text}] sorted by time.
-export function parseLrc(text) {
+function parseLrc(text) {
     const lines = [];
 
     for (const raw of text.split(/\r?\n/)) {

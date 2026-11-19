@@ -15,7 +15,7 @@ export function setAnimationSettings(value) {
 
 // Animations run only when both the extension setting and GNOME's own
 // "Enable Animations" setting are on.
-export function animationsEnabled() {
+function animationsEnabled() {
     return Boolean(settings?.get_boolean('animations')) && St.Settings.get().enable_animations;
 }
 

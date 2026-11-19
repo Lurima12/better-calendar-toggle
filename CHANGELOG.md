@@ -2,6 +2,19 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.52.0
+
+- Project: removed dead code (`_getNotificationForCard`, an unused layout
+  constant) and stopped exporting two helpers that are only used inside their
+  own modules; no behaviour change
+- Documentation: rewrote `README.md` with the complete page, gesture, settings,
+  installation, development and troubleshooting reference, and refreshed
+  `PROGRESS.md` with the current architecture, conventions and verification
+  history
+- Repository: expanded `.gitignore` for build output, schemas and editor junk;
+  generated `dist/` and `schemas/gschemas.compiled` are no longer part of the
+  source tree. This is the first GitHub-ready snapshot of the project
+
 ## 0.51.0
 
 - Media: the shuffle and repeat icons sit in the middle of their buttons again.

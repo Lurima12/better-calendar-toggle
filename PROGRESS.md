@@ -29,6 +29,7 @@
 - [x] 0.49.0 — repeat button (off/all/one); configurable cover gesture to open or raise the playing app
 - [x] 0.50.0 — accent fill and dot for active shuffle/repeat; working timed double-click cover gesture; alarm notification with Snooze and Stop
 - [x] 0.51.0 — shuffle/repeat icons centred again; the active state uses the accent fill only
+- [x] 0.52.0 — dead code removed; README rewritten; PROGRESS refreshed; `.gitignore` expanded; GitHub-ready snapshot
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
@@ -37,6 +38,8 @@
 - **Cleanup:** every signal, timeout and idle source must be disconnected or removed in `destroy()`.
 - **Versioning:** one minor bump per release; update `metadata.json` (`version`, `version-name`) and `CHANGELOG.md`.
 - **Tooling:** `make check` (strict schema), `make pack`, `make install`; repo-local Git identity `lurim412 <lurim412@localhost>`.
+- **Release workflow:** bump `metadata.json` (`version`, `version-name`), update `CHANGELOG.md`, `README.md` and `PROGRESS.md`, run `make check` + `make pack`, commit, then `make install`.
+- **Repository:** <https://github.com/Lurima12/better-calendar-toggle> (public, `main`). Generated `dist/` and `schemas/gschemas.compiled` are ignored.
 - **GNOME Clocks:** `timers` stores only `{duration, name}`; there is no stopwatch persistence; `org.gnome.clocks.state.window` `panel-id` selects the tab.
 - **`St.Button::clicked` passes the clicked mouse button number, not a Clutter event.** Never call event methods on it; track the press source instead (`_swallowClick` in `worldClocks.js`, `pressedOnButton` in `todoView.js`).
 - **An `St.Entry` never keeps key focus.** On `key-focus-in` it grabs focus for its inner `ClutterText`, so the entry immediately gets `key-focus-out`; treat that as "left the field" only when the new focus is outside the entry (`todoView.js` `_startEdit`).
@@ -75,3 +78,21 @@ Nested headless shell, both notification-list modes and both bottom corners:
 - DND and Clear are separated by 12px (the 0.8em row spacing); no touching edges
 - the DND row sits at the bottom in every case, including after an old `top-left` value is loaded (GSettings returns the default `bottom-left`)
 - the Preferences combo lists only "Bottom left" and "Bottom right"
+
+## Verified for 0.50.0
+Nested headless shell with two fake MPRIS players and synthetic pointer events:
+- real double-click on the cover opens the playing app and closes the menu; a single click does not
+- right and middle clicks open the player on the press; touch taps always open
+- a ringing alarm shows a resident notification with **Snooze** and **Stop**; both actions dismiss it and update `AlarmModel`, and stopping from the card also dismisses it
+
+## Verified for 0.51.0
+Nested headless shell, shuffle and repeat both active:
+- button `35×35` at `(614, 208)`; icon `16×16` at `(623, 217)`; centres both at `(631.5, 225.5)`
+- `:checked` applies the accent fill; repeat-one swaps to `media-playlist-repeat-symbolic`
+
+## Verified for 0.52.0
+Static audit (no behaviour change):
+- 33 tracked files; no secrets, private keys or personal paths in source; no junk files
+- `make check` passes; `make pack` produces the archive
+- every one of the 48 schema keys is referenced from `src/` or `prefs.js`
+- removed `_getNotificationForCard`, `MEDIA_RESERVED_EM`, and the unnecessary exports of `animationsEnabled` and `parseLrc`

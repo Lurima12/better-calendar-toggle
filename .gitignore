@@ -6,10 +6,20 @@ dist/
 *.shell-extension.zip
 *.zip
 
-# Editors and operating systems
+# Editors
 *~
+*.swp
+*.swo
+.idea/
+.vscode/
+.eslintcache
+
+# Operating systems
 .DS_Store
+Thumbs.db
+desktop.ini
 
 # Local tooling
 node_modules/
-.eslintcache
+__pycache__/
+*.pyc

@@ -697,10 +697,6 @@ export class NotificationList {
         });
     }
 
-    _getNotificationForCard(card) {
-        return card._notification;
-    }
-
     _ago(datetime) {
         if (!datetime)
             return '';

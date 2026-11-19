@@ -36,9 +36,6 @@ import {WorldClocks} from './src/ui/worldClocks.js';
 const COMPACT_MAX_WIDTH = 1400;
 const COMPACT_MAX_HEIGHT = 800;
 
-// Width (em) the media player needs beside its padding.
-const MEDIA_RESERVED_EM = 4;
-
 // Smallest fixed container size (CSS px) that still lays out properly.
 const MIN_FIXED_WIDTH = 360;
 const MIN_FIXED_HEIGHT = 240;
