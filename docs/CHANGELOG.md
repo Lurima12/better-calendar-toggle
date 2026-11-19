@@ -2,6 +2,19 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.53.0
+
+- Project: `CHANGELOG.md`, `COPYING` and `PROGRESS.md` now live in `docs/`,
+  keeping the repository root to the extension itself. `make pack`, `README.md`
+  and the documented install command follow the new paths; the packaged archive
+  still carries the changelog and licence at its root, since
+  `gnome-extensions pack` flattens extra sources
+- Documentation: `README.md` rewritten for users rather than developers. It
+  leads with what the extension does, installs from the release ZIP in three
+  steps, covers each page and its gestures, groups the settings by task, and
+  adds privacy and troubleshooting notes; the build and architecture details
+  move to a short contributor section that links to `docs/PROGRESS.md`
+
 ## 0.52.0
 
 - Project: removed dead code (`_getNotificationForCard`, an unused layout

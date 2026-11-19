@@ -17,7 +17,7 @@ compile:
 pack: compile
 	mkdir -p $(DIST)
 	rm -f $(ZIP)
-	gnome-extensions pack --force --extra-source=src --extra-source=README.md --extra-source=CHANGELOG.md --extra-source=COPYING --out-dir=$(DIST) .
+	gnome-extensions pack --force --extra-source=src --extra-source=README.md --extra-source=docs/CHANGELOG.md --extra-source=docs/COPYING --out-dir=$(DIST) .
 	@unzip -l $(ZIP) | grep -q 'src/models/alarmModel.js' || { echo "error: $(ZIP) is missing src/" >&2; rm -f $(ZIP); exit 1; }
 
 install: pack

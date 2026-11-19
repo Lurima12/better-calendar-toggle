@@ -30,16 +30,18 @@
 - [x] 0.50.0 — accent fill and dot for active shuffle/repeat; working timed double-click cover gesture; alarm notification with Snooze and Stop
 - [x] 0.51.0 — shuffle/repeat icons centred again; the active state uses the accent fill only
 - [x] 0.52.0 — dead code removed; README rewritten; PROGRESS refreshed; `.gitignore` expanded; GitHub-ready snapshot
+- [x] 0.53.0 — `CHANGELOG`, `COPYING`, `PROGRESS` moved to `docs/`; README rewritten for consumers
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions
 - **Entry:** `extension.js` (extension lifecycle) -> `DateMenuOverhaul` orchestrator.
 - **Modules:** `src/models` (state), `src/services` (D-Bus/network/GSettings bridges), `src/ui` (views), `src/panel`, `src/util`.
 - **Cleanup:** every signal, timeout and idle source must be disconnected or removed in `destroy()`.
-- **Versioning:** one minor bump per release; update `metadata.json` (`version`, `version-name`) and `CHANGELOG.md`.
+- **Versioning:** one minor bump per release; update `metadata.json` (`version`, `version-name`) and `docs/CHANGELOG.md`.
 - **Tooling:** `make check` (strict schema), `make pack`, `make install`; repo-local Git identity `lurim412 <lurim412@localhost>`.
-- **Release workflow:** bump `metadata.json` (`version`, `version-name`), update `CHANGELOG.md`, `README.md` and `PROGRESS.md`, run `make check` + `make pack`, commit, then `make install`.
+- **Release workflow:** bump `metadata.json` (`version`, `version-name`), update `docs/CHANGELOG.md`, `README.md` and `docs/PROGRESS.md`, run `make check` + `make pack`, commit, then `make install`.
 - **Repository:** <https://github.com/Lurima12/better-calendar-toggle> (public, `main`). Generated `dist/` and `schemas/gschemas.compiled` are ignored.
+- **Layout:** the repository root holds only the extension (`extension.js`, `prefs.js`, `metadata.json`, `stylesheet.css`, `schemas/`, `src/`); `CHANGELOG.md`, `COPYING` and `PROGRESS.md` live in `docs/`. `make pack` takes `docs/CHANGELOG.md` and `docs/COPYING` as extra sources; `gnome-extensions pack` flattens them to the archive root.
 - **GNOME Clocks:** `timers` stores only `{duration, name}`; there is no stopwatch persistence; `org.gnome.clocks.state.window` `panel-id` selects the tab.
 - **`St.Button::clicked` passes the clicked mouse button number, not a Clutter event.** Never call event methods on it; track the press source instead (`_swallowClick` in `worldClocks.js`, `pressedOnButton` in `todoView.js`).
 - **An `St.Entry` never keeps key focus.** On `key-focus-in` it grabs focus for its inner `ClutterText`, so the entry immediately gets `key-focus-out`; treat that as "left the field" only when the new focus is outside the entry (`todoView.js` `_startEdit`).
