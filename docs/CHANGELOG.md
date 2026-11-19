@@ -2,6 +2,13 @@
 
 Versions go up one minor step per release: 0.1.0, 0.2.0, 0.3.0, ...
 
+## 0.54.0
+
+- Documentation: the README now offers two installation paths. The release ZIP
+  stays the recommended one, and a new **From source with git clone** section
+  clones the repository, builds the archive with `make` and installs it, for
+  people who want to follow `main` or build it themselves
+
 ## 0.53.0
 
 - Project: `CHANGELOG.md`, `COPYING` and `PROGRESS.md` now live in `docs/`,

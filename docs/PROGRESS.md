@@ -31,6 +31,7 @@
 - [x] 0.51.0 — shuffle/repeat icons centred again; the active state uses the accent fill only
 - [x] 0.52.0 — dead code removed; README rewritten; PROGRESS refreshed; `.gitignore` expanded; GitHub-ready snapshot
 - [x] 0.53.0 — `CHANGELOG`, `COPYING`, `PROGRESS` moved to `docs/`; README rewritten for consumers
+- [x] 0.54.0 — README adds a git-clone source install alongside the release ZIP
 - [ ] Original roadmap — card-interaction refactor (nested buttons -> click actions)
 
 ## Architecture & Conventions

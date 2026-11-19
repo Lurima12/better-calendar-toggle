@@ -87,6 +87,8 @@ Pomodoro, stopwatch, timer and tasks share one page.
 
 ## Install
 
+### From the release ZIP (recommended)
+
 1. Download the ZIP from the [latest release](https://github.com/Lurima12/better-calendar-toggle/releases/latest).
 2. Install and enable it:
 
@@ -99,6 +101,24 @@ Pomodoro, stopwatch, timer and tasks share one page.
 3. **On Wayland, log out and back in.** GNOME Shell caches extension code and
    only loads the new version on a fresh session. On X11, <kbd>Alt</kbd>+<kbd>F2</kbd>
    then `r` is enough.
+
+### From source with git clone
+
+Use this to follow `main` or to build the archive yourself:
+
+```bash
+git clone https://github.com/Lurima12/better-calendar-toggle.git
+cd better-calendar-toggle
+
+make check      # validate the GSettings schema
+make pack       # build dist/better-calendar-toggle@lurim412.shell-extension.zip
+make install    # copy it into ~/.local/share/gnome-shell/extensions
+gnome-extensions enable better-calendar-toggle@lurim412
+```
+
+You need `git`, `make`, `glib-compile-schemas` and `gnome-extensions`; all are
+part of a standard GNOME desktop. On Wayland, log out and back in afterwards.
+The same commands appear in the [contributor notes](#for-contributors).
 
 Open the date menu from the top panel and use the tabs. If the extension does
 not appear, see [Troubleshooting](#troubleshooting).
@@ -185,14 +205,9 @@ Sizes are in `em`, so the layout follows your text scaling.
 ## For contributors
 
 The extension is modular GJS: `extension.js` starts it, and `src/` holds the
-models, services, page views and utilities. The build is wrapped in a Makefile:
-
-```bash
-make check      # validate the GSettings schema
-make pack       # build dist/better-calendar-toggle@lurim412.shell-extension.zip
-make install    # install the archive and compile its schema
-make clean      # remove build output
-```
+models, services, page views and utilities. Start with
+[From source with git clone](#from-source-with-git-clone); `make clean` removes
+`dist/` and the compiled schema when you are done.
 
 Release notes live in [`docs/CHANGELOG.md`](docs/CHANGELOG.md), and the
 architecture, conventions and verification history are in
